@@ -1,0 +1,16 @@
+stages:
+  - ruff
+  - test
+
+ruff:
+  stage: ruff
+  image: ghcr.io/astral-sh/uv:python3.12-alpine
+  script:
+    - uv run --dev ruff format --check --diff
+    - uv run --dev ruff check
+
+test:
+  stage: test
+  image: ghcr.io/astral-sh/uv:python3.12-alpine
+  script:
+    - uv run --group dev pytest
