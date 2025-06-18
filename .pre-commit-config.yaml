@@ -15,6 +15,8 @@ repos:
 
       - id: pytest
         name: test
-        entry: uv run --dev pytest
+        entry: uv run --dev pytest app --verbose
+        pass_filenames: false
+        always_run: true
         language: system
         types: [python]
