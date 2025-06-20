@@ -1,9 +1,5 @@
 from fastapi import APIRouter
-
+from app.core.router import core_router
 
 router = APIRouter()
-
-
-@router.get('/')
-async def index():
-    return 'hehe'
+router.include_router(core_router)
