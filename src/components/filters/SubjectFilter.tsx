@@ -1,5 +1,5 @@
 import {FormControl, FormLabel, Box, useTheme, Stack, Typography, Avatar, SvgIcon} from '@mui/material';
-import {getSubjects} from "../../data/Resources.ts";
+import {getSubjects} from "../../data/resources.ts";
 
 interface SubjectFilterProps {
   selectedSubjects: string[];

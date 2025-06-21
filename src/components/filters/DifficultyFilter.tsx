@@ -1,8 +1,8 @@
 import {FormControl, FormLabel, Box, useTheme, Stack, Typography, SvgIcon} from '@mui/material';
 import {
-    getDifficulties,
-    type Difficulty
-} from "../../data/Resources.ts";
+    getDifficulties
+} from "../../data/resources.ts";
+import type {Difficulty} from "../../data/types.ts";
 
 interface DifficultyFilterProps {
     selectedDifficulty: string[];

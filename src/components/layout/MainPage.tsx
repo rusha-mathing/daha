@@ -3,11 +3,12 @@ import { Container, Paper, Box, Typography, useMediaQuery, type Theme, Drawer, I
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import CloseIcon from '@mui/icons-material/Close';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import {type Resource, resources} from '../../data/Resources.ts';
+import {resources} from '../../data/resources.ts';
 import SubjectFilter from '../filters/SubjectFilter';
 import DifficultyFilter from '../filters/DifficultyFilter';
 import GradeFilter from '../filters/GradeFilter';
 import ResourcesList from '../resources/ResourcesList';
+import type {Resource} from "../../data/types.ts";
 
 const MainPage: React.FC = () => {
   const theme = useTheme();

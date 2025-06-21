@@ -1,8 +1,8 @@
 import {Card, CardContent, Typography, Button, Box, Chip, Stack, useTheme} from '@mui/material';
-import {type Resource} from '../../data/Resources.ts';
 import {
     getDifficulty, getSubject
-} from '../../data/Resources';
+} from '../../data/resources.ts';
+import type {Resource} from "../../data/types.ts";
 
 interface ResourceCardProps {
     resource: Resource;

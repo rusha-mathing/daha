@@ -1,9 +1,4 @@
-export interface Difficulty {
-    type: string;
-    label: string;
-    icon: string;
-    color: string;
-}
+import type {Difficulty, Resource, Subject} from "./types.ts";
 
 export function getDifficulties(): Array<Difficulty> {
     return [
@@ -40,14 +35,6 @@ function setupGetDifficulty(): (type: string) => Difficulty | undefined {
 }
 
 export const getDifficulty: (type: string) => Difficulty | undefined = setupGetDifficulty();
-
-export interface Subject {
-    type: string;
-    label: string;
-    icon: string;
-    color: string;
-    additionalDescription: string[];
-}
 
 export function getSubjects(): Array<Subject> {
     return [
@@ -143,20 +130,6 @@ export function getGrades(): Array<string> {
     return ["7", "8", "9", "10", "11"];
 }
 
-
-export interface Resource {
-    id: string;
-    title: string;
-    description: string;
-    subjectTypes: string[];
-    grades: string[];
-    startDate: string;
-    endDate: string;
-    url: string;
-    imageUrl?: string;
-    organizer?: string;
-    difficultyLevel?: string;
-}
 
 export const resources: Resource[] = [{
     id: '1',

@@ -1,6 +1,6 @@
 import { FormControl, FormLabel, Box, useTheme, Typography } from '@mui/material';
 
-import {getGrades} from "../../data/Resources.ts";
+import {getGrades} from "../../data/resources.ts";
 
 // Создаем корректные компоненты Grid для MUI v5
 // const Grid = MuiGrid;
