@@ -3,8 +3,7 @@ import { Container, Paper, Box, Typography, useMediaQuery, type Theme, Drawer, I
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import CloseIcon from '@mui/icons-material/Close';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import { type Resource, Subject, Grade } from '../../types';
-import { resources } from '../../data/Resources.ts';
+import {type Resource, resources} from '../../data/Resources.ts';
 import SubjectFilter from '../filters/SubjectFilter';
 import DifficultyFilter from '../filters/DifficultyFilter';
 import GradeFilter from '../filters/GradeFilter';
@@ -31,7 +30,7 @@ const MainPage: React.FC = () => {
     // Фильтрация по предметам
     if (selectedSubjects.length > 0) {
       result = result.filter(resource => 
-        resource.subjects.some((subject: Subject) => selectedSubjects.includes(subject))
+        resource.subjectTypes.some((subject: string) => selectedSubjects.includes(subject))
       );
     }
     
@@ -45,7 +44,7 @@ const MainPage: React.FC = () => {
     // Фильтрация по классам
     if (selectedGrades.length > 0) {
       result = result.filter(resource => 
-        resource.grades.some((grade: Grade) => selectedGrades.includes(grade))
+        resource.grades.some((grade: string) => selectedGrades.includes(grade))
       );
     }
 

@@ -1,6 +1,8 @@
 import {FormControl, FormLabel, Box, useTheme, Stack, Typography, SvgIcon} from '@mui/material';
-import {DifficultyLevel} from '../../types';
-import {difficultyColors, difficultyIcons, difficultyLabelsDifficulty} from "../../data/Resources.ts";
+import {
+    getDifficulties,
+    type Difficulty
+} from "../../data/Resources.ts";
 
 interface DifficultyFilterProps {
     selectedDifficulty: string[];
@@ -17,7 +19,7 @@ const DifficultyFilter: React.FC<DifficultyFilterProps> = ({selectedDifficulty, 
             onChange([...selectedDifficulty, difficulty]);
         }
     };
-
+    const difficulties: Array<Difficulty> = getDifficulties();
     return (
         <FormControl component="fieldset" variant="standard" sx={{width: '100%'}}>
             <FormLabel
@@ -35,19 +37,19 @@ const DifficultyFilter: React.FC<DifficultyFilterProps> = ({selectedDifficulty, 
                 Уровень сложности
             </FormLabel>
             <Stack spacing={1.5}>
-                {Object.values(DifficultyLevel).map((difficulty) => {
-                    const isSelected = selectedDifficulty.includes(difficulty);
+                {Object.values(difficulties).map((difficulty: Difficulty) => {
+                    const isSelected = selectedDifficulty.includes(difficulty.type);
                     const Icon = () => {
                         return <svg
                             focusable={false}
                             viewBox="0 0 24 24"
-                            dangerouslySetInnerHTML={{__html: difficultyIcons[difficulty]}}
+                            dangerouslySetInnerHTML={{__html: difficulty.icon}}
                         />
                     }
                     return (
                         <Box
-                            key={difficulty}
-                            onClick={() => handleClick(difficulty)}
+                            key={difficulty.type}
+                            onClick={() => handleClick(difficulty.type)}
                             sx={{
                                 display: 'flex',
                                 alignItems: 'center',
@@ -56,14 +58,14 @@ const DifficultyFilter: React.FC<DifficultyFilterProps> = ({selectedDifficulty, 
                                 cursor: 'pointer',
                                 transition: 'all 0.2s ease',
                                 backgroundColor: isSelected
-                                    ? `${difficultyColors[difficulty]}10`
+                                    ? `${difficulty.color}10`
                                     : theme.palette.grey[50],
                                 border: isSelected
-                                    ? `1px solid ${difficultyColors[difficulty]}30`
+                                    ? `1px solid ${difficulty.color}30`
                                     : `1px solid ${theme.palette.divider}`,
                                 '&:hover': {
                                     backgroundColor: isSelected
-                                        ? `${difficultyColors[difficulty]}20`
+                                        ? `${difficulty.color}20`
                                         : theme.palette.grey[100],
                                     transform: 'translateY(-2px)',
                                     boxShadow: '0 2px 6px rgba(0, 0, 0, 0.05)',
@@ -80,7 +82,7 @@ const DifficultyFilter: React.FC<DifficultyFilterProps> = ({selectedDifficulty, 
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                     backgroundColor: isSelected
-                                        ? difficultyColors[difficulty]
+                                        ? difficulty.color
                                         : 'rgba(0, 0, 0, 0.08)',
                                     color: isSelected
                                         ? '#fff'
@@ -97,12 +99,12 @@ const DifficultyFilter: React.FC<DifficultyFilterProps> = ({selectedDifficulty, 
                                     fontWeight: 500,
                                     fontSize: '0.95rem',
                                     color: isSelected
-                                        ? difficultyColors[difficulty]
+                                        ? difficulty.color
                                         : theme.palette.text.primary,
                                     flex: 1
                                 }}
                             >
-                                {difficultyLabelsDifficulty[difficulty]}
+                                {difficulty.label.charAt(0).toUpperCase() + difficulty.label.slice(1)}
                             </Typography>
                             {isSelected && (
                                 <Box
@@ -110,7 +112,7 @@ const DifficultyFilter: React.FC<DifficultyFilterProps> = ({selectedDifficulty, 
                                         width: 12,
                                         height: 12,
                                         borderRadius: '50%',
-                                        backgroundColor: difficultyColors[difficulty],
+                                        backgroundColor: difficulty.color,
                                         ml: 1
                                     }}
                                 />

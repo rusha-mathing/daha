@@ -1,6 +1,6 @@
 import { FormControl, FormLabel, Box, useTheme, Typography } from '@mui/material';
-import { Grade } from '../../types';
-import {gradeLabels} from "../../data/Resources.ts";
+
+import {getGrades} from "../../data/Resources.ts";
 
 // Создаем корректные компоненты Grid для MUI v5
 // const Grid = MuiGrid;
@@ -47,7 +47,7 @@ const GradeFilter: React.FC<GradeFilterProps> = ({ selectedGrades, onChange }) =
           flexWrap: 'nowrap' // Запрещаем перенос на новую строку
         }}
       >
-        {Object.values(Grade).map((grade) => {
+        {Object.values(getGrades()).map((grade) => {
           const isSelected = selectedGrades.includes(grade);
           return (
             <Box
@@ -90,7 +90,7 @@ const GradeFilter: React.FC<GradeFilterProps> = ({ selectedGrades, onChange }) =
                   color: isSelected ? '#fff' : 'inherit'
                 }}
               >
-                {gradeLabels[grade]}
+                {grade}
               </Typography>
             </Box>
           );

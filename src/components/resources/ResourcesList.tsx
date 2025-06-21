@@ -1,6 +1,6 @@
 import { Box, Typography } from '@mui/material';
 import ResourceCard from './ResourceCard';
-import { type Resource } from '../../types';
+import { type Resource } from '../../data/Resources.ts';
 
 interface ResourcesListProps {
   resources: Resource[];

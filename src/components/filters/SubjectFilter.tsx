@@ -1,6 +1,5 @@
 import {FormControl, FormLabel, Box, useTheme, Stack, Typography, Avatar, SvgIcon} from '@mui/material';
-import { Subject } from '../../types';
-import {subjectColors, subjectIcons, subjectLabels} from "../../data/Resources.ts";
+import {getSubjects} from "../../data/Resources.ts";
 
 interface SubjectFilterProps {
   selectedSubjects: string[];
@@ -35,17 +34,17 @@ const SubjectFilter: React.FC<SubjectFilterProps> = ({ selectedSubjects, onChang
         Направления
       </FormLabel>
       <Stack spacing={1.5}>
-        {Object.values(Subject).map((subject) => {
-          const isSelected = selectedSubjects.includes(subject);
+        {Object.values(getSubjects()).map((subject) => {
+          const isSelected = selectedSubjects.includes(subject.type);
             const Icon = () => {
                 return <svg
-                    dangerouslySetInnerHTML={{__html: subjectIcons[subject]}}
+                    dangerouslySetInnerHTML={{__html: subject.icon}}
                 />
             }
           return (
             <Box
-              key={subject}
-              onClick={() => handleClick(subject)}
+              key={subject.type}
+              onClick={() => handleClick(subject.type)}
               sx={{ 
                 display: 'flex',
                 alignItems: 'center',
@@ -54,14 +53,14 @@ const SubjectFilter: React.FC<SubjectFilterProps> = ({ selectedSubjects, onChang
                 cursor: 'pointer',
                 transition: 'all 0.2s ease',
                 backgroundColor: isSelected 
-                  ? `${subjectColors[subject]}10`
+                  ? `${subject.color}10`
                   : theme.palette.grey[50],
                 border: isSelected 
-                  ? `1px solid ${subjectColors[subject]}30`
+                  ? `1px solid ${subject.color}30`
                   : `1px solid ${theme.palette.divider}`,
                 '&:hover': {
                   backgroundColor: isSelected 
-                    ? `${subjectColors[subject]}20`
+                    ? `${subject.color}20`
                     : theme.palette.grey[100],
                   transform: 'translateY(-2px)',
                   boxShadow: '0 2px 6px rgba(0, 0, 0, 0.05)',
@@ -74,7 +73,7 @@ const SubjectFilter: React.FC<SubjectFilterProps> = ({ selectedSubjects, onChang
                   height: 32,
                   mr: 1.5,
                   backgroundColor: isSelected 
-                    ? subjectColors[subject]
+                    ? subject.color
                     : 'rgba(0, 0, 0, 0.08)',
                   color: isSelected 
                     ? '#fff'
@@ -90,12 +89,12 @@ const SubjectFilter: React.FC<SubjectFilterProps> = ({ selectedSubjects, onChang
                   fontWeight: 500,
                   fontSize: '0.95rem',
                   color: isSelected 
-                    ? subjectColors[subject]
+                    ? subject.color
                     : theme.palette.text.primary,
                   flex: 1
                 }}
               >
-                {subjectLabels[subject]}
+                {subject.label}
               </Typography>
               {isSelected && (
                 <Box
@@ -103,7 +102,7 @@ const SubjectFilter: React.FC<SubjectFilterProps> = ({ selectedSubjects, onChang
                     width: 12,
                     height: 12,
                     borderRadius: '50%',
-                    backgroundColor: subjectColors[subject],
+                    backgroundColor: subject.color,
                     ml: 1
                   }}
                 />
