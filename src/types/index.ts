@@ -1,7 +1,4 @@
 // Типы для фильтрации
-export enum ResourceType {
-  COURSE = 'course',
-}
 
 export enum Subject {
   AI = 'ai',
@@ -33,7 +30,6 @@ export interface Resource {
   id: string;
   title: string;
   description: string;
-  type: ResourceType;
   subjects: Subject[];
   grades: Grade[];
   startDate: string;
