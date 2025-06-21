@@ -1,5 +1,12 @@
 import { Card, CardContent, Typography, Button, Box, Chip, Stack, useTheme } from '@mui/material';
-import { type Resource, Subject, Grade, DifficultyLevel } from '../../types';
+import { type Resource } from '../../types';
+import {
+    additionalDescriptions,
+    difficultyLabelsResource,
+    gradeLabels,
+    subjectColors,
+    subjectLabels
+} from '../../data/Resources';
 
 interface ResourceCardProps {
   resource: Resource;
@@ -23,42 +30,6 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ resource }) => {
     const month = monthsGenitive[date.getMonth()];
     return `${day} ${month} ${year}`;
   };
-  
-  const subjectLabels: Record<string, string> = {
-    [Subject.AI]: 'Искусственный интеллект',
-    [Subject.ROBOTICS]: 'Робототехника',
-    [Subject.PROGRAMMING]: 'Программирование',
-    [Subject.CYBERSECURITY]: 'Информационная безопасность',
-    [Subject.ENTREPRENEURSHIP]: 'Предпринимательство',
-    [Subject.FINANCIAL_LITERACY]: 'Финансовая грамотность',
-    [Subject.SCIENCE]: 'Наука',
-  };
-
-  const subjectColors: Record<string, string> = {
-    [Subject.AI]: '#3f51b5',
-    [Subject.ROBOTICS]: '#9c27b0',
-    [Subject.PROGRAMMING]: '#00bfa5',
-    [Subject.CYBERSECURITY]: '#f44336',
-    [Subject.ENTREPRENEURSHIP]: '#ff9800',
-    [Subject.FINANCIAL_LITERACY]: '#2196f3',
-    [Subject.SCIENCE]: '#4caf50',
-  };
-
-  // Добавим объект с метками для классов (без слова "класс")
-  const gradeLabels: Record<string, string> = {
-    [Grade.GRADE_7]: '7',
-    [Grade.GRADE_8]: '8',
-    [Grade.GRADE_9]: '9',
-    [Grade.GRADE_10]: '10',
-    [Grade.GRADE_11]: '11',
-  };
-  
-  // Добавим метки для уровней сложности
-  const difficultyLabels: Record<string, string> = {
-    [DifficultyLevel.BEGINNER]: 'Уровень: начальный',
-    [DifficultyLevel.INTERMEDIATE]: 'Уровень: средний',
-    [DifficultyLevel.ADVANCED]: 'Уровень: продвинутый',
-  };
 
   // Расширенные описания курсов (2-3 предложения)
   const getEnhancedDescription = (description: string) => {
@@ -77,36 +48,6 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ resource }) => {
     }
     
     // Дополнительные предложения для различных предметов
-    const additionalDescriptions: Record<string, string[]> = {
-      [Subject.AI]: [
-        'Слушатели осваивают практические навыки построения нейронных сетей и работы с большими данными.',
-        'Курс включает работу с реальными проектами и актуальными инструментами искусственного интеллекта.'
-      ],
-      [Subject.ROBOTICS]: [
-        'Участники создадут собственные роботизированные системы с применением современных технологий.',
-        'Программа включает проектирование, сборку и программирование автономных устройств.'
-      ],
-      [Subject.PROGRAMMING]: [
-        'Обучение строится на решении практических задач с постепенным повышением сложности.',
-        'Участники научатся писать оптимальный и читаемый код, работая над реальными проектами.'
-      ],
-      [Subject.CYBERSECURITY]: [
-        'Изучаются методы защиты информации и противодействия современным киберугрозам.',
-        'Курс дает практические навыки обнаружения уязвимостей и построения защищенных систем.'
-      ],
-      [Subject.ENTREPRENEURSHIP]: [
-        'Слушатели разработают собственный бизнес-план и изучат стратегии привлечения инвестиций.',
-        'В программу включены мастер-классы от успешных предпринимателей и венчурных инвесторов.'
-      ],
-      [Subject.FINANCIAL_LITERACY]: [
-        'Участники научатся эффективно управлять личными финансами и создавать пассивный доход.',
-        'Курс включает разбор реальных инвестиционных стратегий и финансовых инструментов.'
-      ],
-      [Subject.SCIENCE]: [
-        'Программа сочетает теоретическую подготовку с практическими экспериментами и исследованиями.',
-        'Участники работают с современным научным оборудованием под руководством ученых-практиков.'
-      ],
-    };
     
     // Выбираем предмет для дополнительного описания
     if (resource.subjects && resource.subjects.length > 0) {
@@ -217,7 +158,7 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ resource }) => {
           ))}
           {resource.difficultyLevel && (
             <Chip
-              label={difficultyLabels[resource.difficultyLevel]}
+              label={difficultyLabelsResource[resource.difficultyLevel]}
               size="medium"
               sx={{
                 borderRadius: { xs: '4px', sm: '6px' },

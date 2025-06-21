@@ -1,5 +1,6 @@
 import { FormControl, FormLabel, Box, useTheme, Typography } from '@mui/material';
 import { Grade } from '../../types';
+import {gradeLabels} from "../../data/Resources.ts";
 
 // Создаем корректные компоненты Grid для MUI v5
 // const Grid = MuiGrid;
@@ -21,14 +22,6 @@ const GradeFilter: React.FC<GradeFilterProps> = ({ selectedGrades, onChange }) =
     }
   };
 
-  // Изменяем надписи, убирая слово "класс"
-  const gradeLabels: Record<string, string> = {
-    [Grade.GRADE_7]: '7',
-    [Grade.GRADE_8]: '8',
-    [Grade.GRADE_9]: '9',
-    [Grade.GRADE_10]: '10',
-    [Grade.GRADE_11]: '11',
-  };
 
   return (
     <FormControl component="fieldset" variant="standard" sx={{ width: '100%' }}>

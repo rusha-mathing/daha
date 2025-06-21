@@ -1,12 +1,6 @@
-import { FormControl, FormLabel, Box, useTheme, Stack, Typography, Avatar } from '@mui/material';
+import {FormControl, FormLabel, Box, useTheme, Stack, Typography, Avatar, SvgIcon} from '@mui/material';
 import { Subject } from '../../types';
-import SmartToyIcon from '@mui/icons-material/SmartToy';
-import PrecisionManufacturingIcon from '@mui/icons-material/PrecisionManufacturing';
-import CodeIcon from '@mui/icons-material/Code';
-import SecurityIcon from '@mui/icons-material/Security';
-import BusinessIcon from '@mui/icons-material/Business';
-import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
-import ScienceIcon from '@mui/icons-material/Science';
+import {subjectColors, subjectIcons, subjectLabels} from "../../data/Resources.ts";
 
 interface SubjectFilterProps {
   selectedSubjects: string[];
@@ -22,36 +16,6 @@ const SubjectFilter: React.FC<SubjectFilterProps> = ({ selectedSubjects, onChang
     } else {
       onChange([...selectedSubjects, subject]);
     }
-  };
-
-  const subjectLabels: Record<string, string> = {
-    [Subject.AI]: 'Искусственный интеллект',
-    [Subject.ROBOTICS]: 'Робототехника',
-    [Subject.PROGRAMMING]: 'Программирование',
-    [Subject.CYBERSECURITY]: 'Информационная безопасность',
-    [Subject.ENTREPRENEURSHIP]: 'Предпринимательство',
-    [Subject.FINANCIAL_LITERACY]: 'Финансовая грамотность',
-    [Subject.SCIENCE]: 'Наука',
-  };
-
-  const subjectIcons: Record<string, React.ReactNode> = {
-    [Subject.AI]: <SmartToyIcon fontSize="small" />,
-    [Subject.ROBOTICS]: <PrecisionManufacturingIcon fontSize="small" />,
-    [Subject.PROGRAMMING]: <CodeIcon fontSize="small" />,
-    [Subject.CYBERSECURITY]: <SecurityIcon fontSize="small" />,
-    [Subject.ENTREPRENEURSHIP]: <BusinessIcon fontSize="small" />,
-    [Subject.FINANCIAL_LITERACY]: <AccountBalanceIcon fontSize="small" />,
-    [Subject.SCIENCE]: <ScienceIcon fontSize="small" />,
-  };
-
-  const subjectColors: Record<string, string> = {
-    [Subject.AI]: '#3f51b5',
-    [Subject.ROBOTICS]: '#9c27b0',
-    [Subject.PROGRAMMING]: '#00bfa5',
-    [Subject.CYBERSECURITY]: '#f44336',
-    [Subject.ENTREPRENEURSHIP]: '#ff9800',
-    [Subject.FINANCIAL_LITERACY]: '#2196f3',
-    [Subject.SCIENCE]: '#4caf50',
   };
 
   return (
@@ -73,6 +37,11 @@ const SubjectFilter: React.FC<SubjectFilterProps> = ({ selectedSubjects, onChang
       <Stack spacing={1.5}>
         {Object.values(Subject).map((subject) => {
           const isSelected = selectedSubjects.includes(subject);
+            const Icon = () => {
+                return <svg
+                    dangerouslySetInnerHTML={{__html: subjectIcons[subject]}}
+                />
+            }
           return (
             <Box
               key={subject}
@@ -112,7 +81,9 @@ const SubjectFilter: React.FC<SubjectFilterProps> = ({ selectedSubjects, onChang
                     : theme.palette.text.secondary,
                 }}
               >
-                {subjectIcons[subject]}
+                <SvgIcon fontSize="small">
+                    <Icon/>
+                </SvgIcon>
               </Avatar>
               <Typography
                 sx={{
