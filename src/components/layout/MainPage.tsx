@@ -4,7 +4,7 @@ import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import CloseIcon from '@mui/icons-material/Close';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import { type Resource, Subject, Grade } from '../../types';
-import { mockResources } from '../../data/mockResources';
+import { resources } from '../../data/Resources.ts';
 import SubjectFilter from '../filters/SubjectFilter';
 import DifficultyFilter from '../filters/DifficultyFilter';
 import GradeFilter from '../filters/GradeFilter';
@@ -18,7 +18,7 @@ const MainPage: React.FC = () => {
   const [selectedGrades, setSelectedGrades] = useState<string[]>([]);
   
   // Состояние для фильтрованных и отсортированных ресурсов
-  const [filteredResources, setFilteredResources] = useState<Resource[]>(mockResources);
+  const [filteredResources, setFilteredResources] = useState<Resource[]>(resources);
   
   // Состояние для мобильной версии
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
@@ -26,7 +26,7 @@ const MainPage: React.FC = () => {
 
   // Применение фильтров
   useEffect(() => {
-    let result = [...mockResources];
+    let result = [...resources];
 
     // Фильтрация по предметам
     if (selectedSubjects.length > 0) {
@@ -139,7 +139,7 @@ const MainPage: React.FC = () => {
     }}>
       <Box sx={{ 
         display: 'flex', 
-        flexDirection: 'column', 
+        flexDirection: 'column',
         gap: { xs: 2, sm: 3, md: 4 },
         width: '100%'
       }}>
@@ -154,10 +154,10 @@ const MainPage: React.FC = () => {
         }}>
           {/* Фильтры для десктопа */}
           {!isMobile ? (
-            <Paper 
+            <Paper
               elevation={0}
-              sx={{ 
-                p: 0, 
+              sx={{
+                p: 0,
                 height: 'fit-content',
                 borderRadius: { xs: 2, sm: 3 },
                 border: `1px solid ${theme.palette.divider}`,
