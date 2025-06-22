@@ -4,7 +4,7 @@ from fastapi.testclient import TestClient
 import pytest
 from sqlmodel import create_engine, SQLModel, StaticPool, Session, select
 
-from app.models import Course, Subject, Organization, get_session, Difficulty, Grade
+from app.models import Course, Subject, Organization, get_session, Difficulty, Grade, CourseSubjectLink, CourseGradeLink
 from main import api
 
 
@@ -45,7 +45,6 @@ def session_fixture():
         )
         session.add_all([ai, robotics, programming])
         session.commit()
-
         org1 = Organization(name='Coding Academy')
         org2 = Organization(name='Science School')
         session.add_all([org1, org2])
@@ -57,7 +56,7 @@ def session_fixture():
             icon='<path d="M5 13.18v4L12 21l7-3.82v-4L12 17zM12 3 1 9l11 6 9-4.91V17h2V9z"></path>',
             color='#4caf50',
         )
-        session.add_all([beginner])
+        session.add(beginner)
         session.commit()
 
         grade_7 = Grade(
@@ -71,31 +70,49 @@ def session_fixture():
         )
         session.add_all([grade_7, grade_8, grade_9])
         session.commit()
-        courses = [
-            Course(
-                title='Основы машинного обучения и нейронных сетей',
-                description='Ведут специалисты из Яндекса с реальными кейсами из индустрии.',
-                start_date=date(2023, 9, 1),  # Изменено
-                end_date=date(2024, 1, 15),  # Изменено
-                url='https://practicum.yandex.ru/',
-                organization_id=org1.id,
-                difficulty_id=beginner.id,
-                subject_ids=[ai.id, programming.id],
-                grade_ids=[grade_7.id, grade_8.id, grade_9.id],
-            ),
-            Course(
-                title='Python Fundamentals',
-                description='Learn Python programming',
-                start_date=date(2023, 10, 1),  # Изменено
-                end_date=date(2024, 3, 1),  # Изменено
-                url='https://example.com/python',
-                organization_id=org1.id,
-                difficulty_id=beginner.id,
-                subject_ids=[programming.id],
-                grade_ids=[grade_7.id, grade_8.id, grade_9.id],
-            ),
-        ]
-        session.add_all(courses)
+        ai_subject_ids = [ai.id, programming.id]
+        ai_grade_ids = [grade_7.id, grade_8.id, grade_9.id]
+
+        ai_course = Course(
+            title='Основы машинного обучения и нейронных сетей',
+            description='Ведут специалисты из Яндекса с реальными кейсами из индустрии.',
+            start_date=date(2023, 9, 1),
+            end_date=date(2024, 1, 15),
+            url='https://practicum.yandex.ru/',
+            organization_id=org1.id,
+            difficulty_id=beginner.id,
+            subject_ids=ai_subject_ids,
+            grade_ids=ai_grade_ids,
+        )
+        session.add(ai_course)
+        session.commit()  # .id
+
+        for subject_id in ai_subject_ids:
+            session.add(CourseSubjectLink(course_id=ai_course.id, subject_id=subject_id))
+        for grade_id in ai_grade_ids:
+            session.add(CourseGradeLink(course_id=ai_course.id, grade_id=grade_id))
+        session.commit()
+        python_f_subject_ids = [programming.id]
+        python_f_grade_ids = [grade_7.id, grade_8.id, grade_9.id]
+
+        python_fundementals_course = Course(
+            title='Python Fundamentals',
+            description='Learn Python programming',
+            start_date=date(2023, 10, 1),
+            end_date=date(2024, 3, 1),
+            url='https://example.com/python',
+            organization_id=org1.id,
+            difficulty_id=beginner.id,
+            subject_ids=python_f_subject_ids,
+            grade_ids=python_f_grade_ids,
+        )
+        session.add(python_fundementals_course)
+        session.commit()  # .id
+
+        for subject_id in python_f_subject_ids:
+            session.add(CourseSubjectLink(course_id=python_fundementals_course.id, subject_id=subject_id))
+        for grade_id in python_f_grade_ids:
+            session.add(CourseGradeLink(course_id=python_fundementals_course.id, grade_id=grade_id))
         session.commit()
         yield session
 
@@ -113,7 +130,6 @@ def client_fixture(session: Session):
 
 def test_get_courses(client: TestClient):
     response = client.get('/courses/')
-    print(response.json())
     assert response.status_code == 200
     data = response.json()
     assert len(data) == 2
@@ -123,45 +139,53 @@ def test_get_courses(client: TestClient):
     ai = data[0]
     assert ai['title'] == 'Основы машинного обучения и нейронных сетей'
     assert ai['url'] == 'https://practicum.yandex.ru/'
-    assert ai['grades'] == [7, 8, 9] # Пропускаем проверку grades
+    assert ai['subject'] == ['ai', 'programming']
+    assert ai['grades'] == [7, 8, 9]
     assert ai['start'] == '2023-09-01'
     assert ai['end'] == '2024-01-15'
     assert ai['difficulty'] == 'beginner'
     assert ai['description'] == 'Ведут специалисты из Яндекса с реальными кейсами из индустрии.'
     assert ai['organization'] == 'Coding Academy'
-    assert ai['subject'] == ['ai']
+
 
 def test_get_course_not_found(client: TestClient):
     response = client.get('/courses/1000/')
     assert response.status_code == 404
-    assert response.json()['detail'] == 'Course not found' # Исправлено
+    assert response.json()['detail'] == 'Course not found'
+
 
 def test_get_subjects(client: TestClient):
     response = client.get('/subjects/')
     assert response.status_code == 200
-    data = response.json()  
+    data = response.json()
     assert len(data) == 3
 
-    subject_names = sorted([s['label'] for s in data]) # Исправлено
-    assert subject_names == sorted(['Искусственный интеллект', 'Робототехника', 'Программирование']) # Исправлено
+    subject_names = sorted([s['label'] for s in data])
+    assert subject_names == sorted(['Искусственный интеллект', 'Робототехника', 'Программирование'])
 
-    ai = next(s for s in data if s['label'] == 'Искусственный интеллект') # Исправлено
+    ai = next(s for s in data if s['label'] == 'Искусственный интеллект')
     assert ai['id'] is not None
-    assert ai['label'] == 'Искусственный интеллект' # Исправлено
+    assert ai['label'] == 'Искусственный интеллект'
+    assert ai['icon'] == '<path d="M20 9V7c0-1.1-.9-2-2-2h-3c0-1.66-1.34-3-3-3S9 3.34 9 5H6c-1.1 0-2 .9-2 2v2c-1.66 0-3 1.34-3 3s1.34 3 3 3v4c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-4c1.66 0 3-1.34 3-3s-1.34-3-3-3M7.5 11.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5S9.83 13 9 13s-1.5-.67-1.5-1.5M16 17H8v-2h8zm-1-4c-.83 0-1.5-.67-1.5-1.5S14.17 10 15 10s1.5.67 1.5 1.5S15.83 13 15 13"></path>'
+    assert ai['color'] == '#3f51b5'
+    assert ai['additional_description'] == [
+        'Слушатели осваивают практические навыки построения нейронных сетей и работы с большими данными.',
+        'Курс включает работу с реальными проектами и актуальными инструментами искусственного интеллекта.'
+    ]
 
 
 def test_get_subject_success(client: TestClient, session: Session):
-    subject = session.exec(select(Subject).where(Subject.type == 'ai')).first() # Исправлено
+    subject = session.exec(select(Subject).where(Subject.type == 'ai')).first()
     response = client.get(f'/subjects/{subject.id}/')
     assert response.status_code == 200
     data = response.json()
-    assert data['label'] == 'Искусственный интеллект' # Исправлено
+    assert data['label'] == 'Искусственный интеллект'
 
 
 def test_get_subject_not_found(client: TestClient):
     response = client.get('/subjects/999/')
     assert response.status_code == 404
-    assert response.json()['detail'] == 'Subject not found' # Исправлено
+    assert response.json()['detail'] == 'Subject not found'
 
 
 def test_get_organizations(client: TestClient):
@@ -170,12 +194,12 @@ def test_get_organizations(client: TestClient):
     data = response.json()
     assert len(data) == 2
 
-    org_names = sorted([o['name'] for o in data]) # Исправлено
+    org_names = sorted([o['name'] for o in data])
     assert org_names == ['Coding Academy', 'Science School']
 
-    science_school = next(o for o in data if o['name'] == 'Science School') # Исправлено
+    science_school = next(o for o in data if o['name'] == 'Science School')
     assert science_school['id'] is not None
-    assert science_school['name'] == 'Science School' # Исправлено
+    assert science_school['name'] == 'Science School'
 
 
 def test_get_organization_success(client: TestClient, session: Session):
@@ -183,17 +207,17 @@ def test_get_organization_success(client: TestClient, session: Session):
     response = client.get(f'/organizations/{org.id}/')
     assert response.status_code == 200
     data = response.json()
-    assert data['name'] == 'Coding Academy' # Исправлено
+    assert data['name'] == 'Coding Academy'
 
 
 def test_get_organization_not_found(client: TestClient):
     response = client.get('/organizations/999/')
     assert response.status_code == 404
-    assert response.json()['detail'] == 'Organization not found' # Исправлено
+    assert response.json()['detail'] == 'Organization not found'
 
 
 def test_subject_courses_relation(client: TestClient, session: Session):
-    subject = session.exec(select(Subject).where(Subject.type == 'programming')).first() # Исправлено
+    subject = session.exec(select(Subject).where(Subject.type == 'programming')).first()
     response = client.get(f'/subjects/{subject.id}/')
     data = response.json()
 
