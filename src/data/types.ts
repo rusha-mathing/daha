@@ -5,6 +5,24 @@ export interface Difficulty {
     color: string;
 }
 
+export interface Grade{
+    id: number;
+    grade: string
+}
+
+export interface CourseResponse {
+    id: number;
+    title: string;
+    description: string;
+    subject: string[];
+    grades: number[];
+    start: string;
+    end: string;
+    url: string;
+    organization: string;
+    difficulty: string;
+}
+
 export interface Subject {
     type: string;
     label: string;
@@ -13,7 +31,7 @@ export interface Subject {
     additionalDescription: string[];
 }
 
-export interface Resource {
+export interface Course {
     id: string;
     title: string;
     description: string;

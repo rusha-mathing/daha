@@ -1,23 +1,44 @@
 import {Card, CardContent, Typography, Button, Box, Chip, Stack, useTheme} from '@mui/material';
 import {
-    getDifficulty, getSubject
+    setupGetDifficulty,
+    setupGetSubject
 } from '../../data/resources.ts';
-import type {Resource} from "../../data/types.ts";
+import type {Course, Difficulty, Subject} from "../../data/types.ts";
+import {useEffect, useState} from "react";
 
 interface ResourceCardProps {
-    resource: Resource;
+    resource: Course;
 }
 
 const ResourceCard: React.FC<ResourceCardProps> = ({resource}) => {
     const theme = useTheme();
+    const [getSubject, setGetSubject] = useState<(subject: string) => Subject | undefined>(() => () => undefined);
+    const [getDifficulty, setGetDifficulty] = useState<(difficulty: string) => Difficulty | undefined>(() => () => undefined);
 
-    // Форматирование даты с правильным склонением месяца и годом
+    // Fetch subject and difficulty functions using useEffect
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const subjectFn = await setupGetSubject();
+                setGetSubject(() => subjectFn);
+
+                const difficultyFn = await setupGetDifficulty();
+                setGetDifficulty(() => difficultyFn);
+            } catch (error) {
+                console.error('Error fetching subject or difficulty data:', error);
+            }
+        };
+
+        fetchData();
+    }, []); // Empty dependency array to run once on mount
+
+    // Format date with proper month declension and year
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
         const day = date.getDate();
         const year = date.getFullYear();
 
-        // Месяцы в родительном падеже
+        // Months in genitive case
         const monthsGenitive = [
             'января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
             'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'
@@ -27,15 +48,15 @@ const ResourceCard: React.FC<ResourceCardProps> = ({resource}) => {
         return `${day} ${month} ${year}`;
     };
 
-    // Расширенные описания курсов (2-3 предложения)
+    // Enhanced course descriptions (2-3 sentences)
     const getEnhancedDescription = (description: string) => {
-        // Если описание уже достаточно длинное, используем его как есть
+        // If description is already long enough, use it as is
         if (description.length > 150) return description;
 
-        // Проверяем и исправляем окончание первоначального описания
+        // Ensure proper ending for the initial description
         let formattedDescription = description;
 
-        // Добавляем точку в конце, если её нет и описание не заканчивается на знак пунктуации
+        // Add period if missing and description doesn't end with punctuation
         if (formattedDescription &&
             !formattedDescription.endsWith('.') &&
             !formattedDescription.endsWith('!') &&
@@ -43,9 +64,7 @@ const ResourceCard: React.FC<ResourceCardProps> = ({resource}) => {
             formattedDescription += '.';
         }
 
-        // Дополнительные предложения для различных предметов
-
-        // Выбираем предмет для дополнительного описания
+        // Additional descriptions for different subjects
         if (resource.subjectTypes && resource.subjectTypes.length > 0) {
             const primarySubject = resource.subjectTypes[0];
             const additions = getSubject(primarySubject)?.additionalDescription;
@@ -55,9 +74,10 @@ const ResourceCard: React.FC<ResourceCardProps> = ({resource}) => {
             }
         }
 
-        // Общие дополнения, если не нашлось по предмету
+        // Generic additions if no subject-specific description is found
         return `${formattedDescription} Программа разработана ведущими специалистами с учетом современных требований отрасли. Участники получат актуальные знания и ценные практические навыки.`;
     };
+
 
     return (
         <Card sx={{

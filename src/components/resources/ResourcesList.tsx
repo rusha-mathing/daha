@@ -1,10 +1,10 @@
 import { Box, Typography } from '@mui/material';
 import ResourceCard from './ResourceCard';
 
-import type {Resource} from "../../data/types.ts";
+import type {Course} from "../../data/types.ts";
 
 interface ResourcesListProps {
-  resources: Resource[];
+  resources: Course[];
 }
 
 const ResourcesList: React.FC<ResourcesListProps> = ({ resources }) => {
