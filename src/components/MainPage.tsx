@@ -3,12 +3,10 @@ import { Container, Paper, Box, Typography, useMediaQuery, type Theme, Drawer, I
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import CloseIcon from '@mui/icons-material/Close';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import {resources} from '../../data/resources.ts';
-import SubjectFilter from '../filters/SubjectFilter';
-import DifficultyFilter from '../filters/DifficultyFilter';
-import GradeFilter from '../filters/GradeFilter';
-import ResourcesList from '../resources/ResourcesList';
-import type {Resource} from "../../data/types.ts";
+import {getDifficulties, getGrades, getSubjects, resources} from '../data/resources.ts';
+import ResourcesList from './resources/ResourcesList.tsx';
+import type {Resource} from "../data/types.ts";
+import Filter from './Filter.tsx';
 
 const MainPage: React.FC = () => {
   const theme = useTheme();
@@ -89,13 +87,33 @@ const MainPage: React.FC = () => {
         </Box>
       )}
       <Box>
-        <SubjectFilter selectedSubjects={selectedSubjects} onChange={handleSubjectsChange} />
+        <Filter
+            selected={selectedSubjects}
+            onChange={handleSubjectsChange}
+            provider={getSubjects}
+            title="Направления"
+            fontWeight="500"
+        />
       </Box>
       <Box sx={{ mt: 4 }}>
-        <DifficultyFilter selectedDifficulty={selectedDifficulty} onChange={handleDifficultyChange} />
+        <Filter
+            selected={selectedDifficulty}
+            onChange={handleDifficultyChange}
+            provider={getDifficulties}
+            title="Уровень сложности"
+            fontWeight="500"
+        />
       </Box>
       <Box sx={{ mt: 4, pb: 2 }}>
-        <GradeFilter selectedGrades={selectedGrades} onChange={handleGradesChange} />
+        <Filter
+            selected={selectedGrades}
+            onChange={handleGradesChange}
+            provider={() => getGrades().map(grade => ({ type: grade, label: grade, color: undefined }))}
+            title="Классы"
+            fontWeight="600"
+            direction="row"
+            rounded={true}
+        />
       </Box>
       
       {hasActiveFilters && (
