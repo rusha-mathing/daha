@@ -97,7 +97,7 @@ def create_organizations(session: Session) -> List[Organization]:
 
 def create_grades(session: Session) -> List[Grade]:
     """Create mock grades and return them."""
-    grades_data = [{'id': 10, 'grade': 10}, {'id': 11, 'grade': 11}, {'id': 12, 'grade': 12}]
+    grades_data = [{'id': 9, 'grade': 9}, {'id': 10, 'grade': 10}, {'id': 11, 'grade': 11}]
     grades = []
     for data in grades_data:
         existing = session.exec(select(Grade).where(Grade.id == data['id'])).first()
@@ -134,7 +134,7 @@ def create_courses(session: Session) -> List[Course]:
             'organization_id': 2,
             'difficulty_id': 2,
             'subject_ids': [2],  # References 'math'
-            'grade_ids': [11, 12],
+            'grade_ids': [9, 10],
         },
     ]
     courses = []
