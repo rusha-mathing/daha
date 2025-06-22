@@ -1,43 +1,37 @@
 from datetime import date
-from typing import Optional
+from typing import List
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
-DEFAULT_LIMIT = 10
-
-
-class SubjectResponse(BaseModel):
+class FilterResponse(BaseModel):
     id: int
-    name: str
+    type: str
+    label: str
+    icon: str
+    color: str
 
+class SubjectResponse(FilterResponse):
+    additional_description: List[str]
+
+class DifficultyResponse(FilterResponse):
+    pass
 
 class OrganizationResponse(BaseModel):
     id: int
     name: str
 
+class GradeResponse(BaseModel):
+    id: int
+    grade: int
 
 class CourseResponse(BaseModel):
     id: int
-    name: str
-    url: str
-    min_class: int
-    max_class: int
+    title: str
+    description: str
+    subject: List[str]
+    grades: List[int]
     start: date
     end: date
-    difficulty: int
-    description: str
-    organization: OrganizationResponse
-    subject: SubjectResponse
-
-    class Config:
-        from_attributes = True
-
-
-class CourseFilterParams(BaseModel):
-    classes: Optional[list[int]] = Field(default=None, description='Classes')
-    difficulties: Optional[list[int]] = Field(default=None, description='Difficulties')
-    subjects: Optional[list[int]] = Field(default=None, description='Subjects id')
-    organizations: Optional[list[int]] = Field(default=None, description='Organizations id')
-    query: Optional[str] = Field(default=None, description='Name contain')
-    offset: int = Field(0, ge=0, description='Offset')
-    limit: int = Field(DEFAULT_LIMIT, ge=1, description='Limit')
+    url: str
+    organization: str
+    difficulty: str
