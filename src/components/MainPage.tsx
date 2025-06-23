@@ -76,21 +76,21 @@ const MainPage: React.FC = () => {
         // Filter by subjects
         if (selectedSubjects.length > 0) {
             result = result.filter(resource =>
-                resource.subjectTypes.some((subject: string) => selectedSubjects.includes(subject))
+                resource.subjects.some((subject: string) => selectedSubjects.includes(subject))
             );
         }
 
         // Filter by difficulty level
         if (selectedDifficulty.length > 0) {
             result = result.filter(resource =>
-                resource.difficultyLevel && selectedDifficulty.includes(resource.difficultyLevel)
+                resource.difficulty && selectedDifficulty.includes(resource.difficulty)
             );
         }
 
         // Filter by grades
         if (selectedGrades.length > 0) {
             result = result.filter(resource =>
-                resource.grades.some((grade: string) => selectedGrades.includes(grade))
+                resource.grades.some((grade: number) => selectedGrades.includes(grade.toString()))
             );
         }
 

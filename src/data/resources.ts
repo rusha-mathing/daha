@@ -1,4 +1,4 @@
-import type {Difficulty, Course, Subject, Grade, CourseResponse} from "./types.ts";
+import type {Difficulty, Course, Subject, Grade} from "./types.ts";
 
 const memoizedFetch = (() => {
     const cache = new Map<string, unknown>();
@@ -66,19 +66,5 @@ export async function getGrades(): Promise<Array<string>> {
 
 
 export async function getCourses(): Promise<Array<Course>> {
-    return (await memoizedFetch(`${baseUrl}/courses`) as Array<CourseResponse>).map((c) => {
-        return {
-            id: c.id.toString(),
-            title: c.title,
-            description: c.description,
-            subjectTypes: c.subject,
-            grades: c.grades.map(g => g.toString()),
-            startDate: c.start,
-            endDate: c.end,
-            url: c.url,
-            imageUrl: "",
-            organizer: c.organization,
-            difficultyLevel: c.difficulty
-        }
-    })
+    return (await memoizedFetch(`${baseUrl}/courses`)) as Array<Course>
 }

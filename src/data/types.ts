@@ -5,42 +5,30 @@ export interface Difficulty {
     color: string;
 }
 
-export interface Grade{
+export interface Grade {
     id: number;
     grade: string
 }
 
-export interface CourseResponse {
-    id: number;
-    title: string;
-    description: string;
-    subject: string[];
-    grades: number[];
-    start: string;
-    end: string;
-    url: string;
-    organization: string;
-    difficulty: string;
-}
 
 export interface Subject {
     type: string;
     label: string;
     icon: string;
     color: string;
-    additionalDescription: string[];
+    additional_description: string[];
 }
 
 export interface Course {
     id: string;
     title: string;
     description: string;
-    subjectTypes: string[];
-    grades: string[];
-    startDate: string;
-    endDate: string;
+    subjects: string[];
+    grades: number[];
+    start_date: string;
+    end_date: string;
     url: string;
-    imageUrl?: string;
-    organizer?: string;
-    difficultyLevel?: string;
+    image_url?: string;
+    organization?: string;
+    difficulty?: string;
 }

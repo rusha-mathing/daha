@@ -65,9 +65,9 @@ const ResourceCard: React.FC<ResourceCardProps> = ({resource}) => {
         }
 
         // Additional descriptions for different subjects
-        if (resource.subjectTypes && resource.subjectTypes.length > 0) {
-            const primarySubject = resource.subjectTypes[0];
-            const additions = getSubject(primarySubject)?.additionalDescription;
+        if (resource.subjects && resource.subjects.length > 0) {
+            const primarySubject = resource.subjects[0];
+            const additions = getSubject(primarySubject)?.additional_description;
 
             if (additions) {
                 return `${formattedDescription} ${additions.join(' ')}`;
@@ -124,7 +124,7 @@ const ResourceCard: React.FC<ResourceCardProps> = ({resource}) => {
                 </Typography>
 
                 {/* Организатор курса - более заметно, без "в" */}
-                {resource.organizer && (
+                {resource.organization && (
                     <Typography
                         variant="body1"
                         sx={{
@@ -134,7 +134,7 @@ const ResourceCard: React.FC<ResourceCardProps> = ({resource}) => {
                             color: '#616161'
                         }}
                     >
-                        {resource.organizer}
+                        {resource.organization}
                     </Typography>
                 )}
 
@@ -149,7 +149,7 @@ const ResourceCard: React.FC<ResourceCardProps> = ({resource}) => {
                         letterSpacing: '-0.01em'
                     }}
                 >
-                    {formatDate(resource.startDate)} — {formatDate(resource.endDate)}
+                    {formatDate(resource.start_date)} — {formatDate(resource.end_date)}
                 </Typography>
 
                 {/* Чипсы для классов и типа */}
@@ -172,9 +172,9 @@ const ResourceCard: React.FC<ResourceCardProps> = ({resource}) => {
                             }}
                         />
                     ))}
-                    {resource.difficultyLevel && (
+                    {resource.difficulty && (
                         <Chip
-                            label={`Уровень: ${getDifficulty(resource.difficultyLevel)?.label}`} // TODO: ?.
+                            label={`Уровень: ${getDifficulty(resource.difficulty)?.label}`} // TODO: ?.
                             size="medium"
                             sx={{
                                 borderRadius: {xs: '4px', sm: '6px'},
@@ -208,7 +208,7 @@ const ResourceCard: React.FC<ResourceCardProps> = ({resource}) => {
                 {/* Блок с предметами (без заголовка) */}
                 <Box sx={{mb: {xs: 1.5, sm: 2}}}>
                     <Stack direction="row" spacing={0.75} flexWrap="wrap" useFlexGap sx={{mb: 0.5}}>
-                        {resource.subjectTypes.map((type) => (
+                        {resource.subjects.map((type) => (
                             <Chip
                                 key={type}
                                 label={getSubject(type)?.label}
