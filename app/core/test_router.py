@@ -73,6 +73,7 @@ def session_fixture():
             start_date=date(2023, 9, 1),
             end_date=date(2024, 1, 15),
             url='https://practicum.yandex.ru/',
+            image_url='https://placehold.co/100x100',
             organization_id=org1.id,
             difficulty_id=beginner.id,
             subject_ids=ai_subject_ids,
@@ -95,6 +96,7 @@ def session_fixture():
             start_date=date(2023, 10, 1),
             end_date=date(2024, 3, 1),
             url='https://example.com/python',
+            image_url='https://placehold.co/100x100',
             organization_id=org1.id,
             difficulty_id=beginner.id,
             subject_ids=python_f_subject_ids,
@@ -133,10 +135,11 @@ def test_get_courses(client: TestClient):
     ai = data[0]
     assert ai['title'] == 'Основы машинного обучения и нейронных сетей'
     assert ai['url'] == 'https://practicum.yandex.ru/'
-    assert ai['subject'] == ['ai', 'programming']
+    assert ai['image_url'] == 'https://placehold.co/100x100'
+    assert ai['subjects'] == ['ai', 'programming']
     assert ai['grades'] == [7, 8, 9]
-    assert ai['start'] == '2023-09-01'
-    assert ai['end'] == '2024-01-15'
+    assert ai['start_date'] == '2023-09-01'
+    assert ai['end_date'] == '2024-01-15'
     assert ai['difficulty'] == 'beginner'
     assert ai['description'] == 'Ведут специалисты из Яндекса с реальными кейсами из индустрии.'
     assert ai['organization'] == 'Coding Academy'
@@ -176,7 +179,17 @@ def test_get_subject_success(client: TestClient, session: Session):
     response = client.get(f'/subjects/{subject.id}/')
     assert response.status_code == 200
     data = response.json()
+    assert data['type'] == 'ai'
     assert data['label'] == 'Искусственный интеллект'
+    assert (
+        data['icon']
+        == '<path d="M20 9V7c0-1.1-.9-2-2-2h-3c0-1.66-1.34-3-3-3S9 3.34 9 5H6c-1.1 0-2 .9-2 2v2c-1.66 0-3 1.34-3 3s1.34 3 3 3v4c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-4c1.66 0 3-1.34 3-3s-1.34-3-3-3M7.5 11.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5S9.83 13 9 13s-1.5-.67-1.5-1.5M16 17H8v-2h8zm-1-4c-.83 0-1.5-.67-1.5-1.5S14.17 10 15 10s1.5.67 1.5 1.5S15.83 13 15 13"></path>'
+    )
+    assert data['color'] == '#3f51b5'
+    assert data['additional_description'] == [
+        'Слушатели осваивают практические навыки построения нейронных сетей и работы с большими данными.',
+        'Курс включает работу с реальными проектами и актуальными инструментами искусственного интеллекта.',
+    ]
 
 
 def test_get_subject_not_found(client: TestClient):

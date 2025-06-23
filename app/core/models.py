@@ -1,7 +1,9 @@
 from datetime import date
 from typing import List
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, field_validator
+
+from app.models import Grade, Difficulty, Subject, Organization
 
 
 class FilterResponse(BaseModel):
@@ -34,10 +36,36 @@ class CourseResponse(BaseModel):
     id: int
     title: str
     description: str
-    subject: List[str]
-    grades: List[int]
-    start: date
-    end: date
+    start_date: date
+    end_date: date
     url: str
-    organization: str
+    image_url: str
+    model_config = ConfigDict(from_attributes=True)  # pydantic v2
+
+    grades: List[int]
+
+    @field_validator('grades', mode='before')
+    @classmethod
+    def serialize_grades(cls, grades: List[Grade]) -> List[int]:
+        return [int(i.grade) for i in grades]
+
     difficulty: str
+
+    @field_validator('difficulty', mode='before')
+    @classmethod
+    def serialize_difficulty(cls, difficulty: Difficulty) -> str:
+        return difficulty.type
+
+    subjects: List[str]
+
+    @field_validator('subjects', mode='before')
+    @classmethod
+    def serialize_subjects(cls, subjects: List[Subject]) -> List[str]:
+        return [str(i.type) for i in subjects]
+
+    organization: str
+
+    @field_validator('organization', mode='before')
+    @classmethod
+    def serialize_organization(cls, organization: Organization) -> str:
+        return organization.name
