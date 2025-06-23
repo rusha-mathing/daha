@@ -22,7 +22,10 @@ Using npm:
 ```bash
 npm install
 ```
-
+### 3. .env configuration
+```text
+VITE_API_URL=
+```
 ## Scripts
 - `dev`: Starts the development server with HMR.
 - `build`: Creates a production-ready build.
