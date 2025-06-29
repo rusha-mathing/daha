@@ -8,8 +8,8 @@ from sqlalchemy.sql.sqltypes import String
 from sqlalchemy import Column, JSON
 
 postgres_db_name = 'daha_db'
-sqlite_url = f'postgresql+asyncpg://daha_user:your_secure_password@localhost/{postgres_db_name}'
-engine = create_async_engine(sqlite_url, echo=True)
+db_url = f'postgresql+asyncpg://daha_user:your_secure_password@localhost/{postgres_db_name}'
+engine = create_async_engine(db_url, echo=True)
 
 
 # one to many I suppose
