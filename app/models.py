@@ -1,13 +1,15 @@
 from datetime import date
-from typing import List
+from typing import List, AsyncGenerator
 
-from sqlmodel import Field, Relationship, SQLModel, Session, create_engine
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from sqlmodel import Field, Relationship, SQLModel
+from sqlmodel.ext.asyncio.session import AsyncSession as SQLModelAsyncSession
 from sqlalchemy.sql.sqltypes import String
 from sqlalchemy import Column, JSON
 
-sqlite_file_name = 'db.sqlite3'
-sqlite_url = f'sqlite:///{sqlite_file_name}'
-engine = create_engine(sqlite_url, echo=True)
+postgres_db_name = 'daha_db'
+sqlite_url = f'postgresql+asyncpg://daha_user:your_secure_password@localhost/{postgres_db_name}'
+engine = create_async_engine(sqlite_url, echo=True)
 
 
 # one to many I suppose
@@ -73,10 +75,10 @@ class Course(SQLModel, table=True):
     grades: List['Grade'] = Relationship(back_populates='courses', link_model=CourseGradeLink)
 
 
-def create_db_and_models():
-    SQLModel.metadata.create_all(engine)
+async def create_db_and_models():
+    async with engine.begin() as conn:
+        await conn.run_sync(SQLModel.metadata.create_all)
 
-
-def get_session():
-    with Session(engine) as session:
+async def get_session() -> AsyncGenerator[AsyncSession, None]:
+    async with SQLModelAsyncSession(engine) as session:
         yield session
