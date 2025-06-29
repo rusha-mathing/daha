@@ -1,83 +1,92 @@
-from typing import Annotated, List
+from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlmodel import Session, select, and_, or_
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import selectinload
+from sqlmodel import Session, select
 
-from app.models import get_session, Course, Subject, Organization
-from app.core.models import CourseResponse, SubjectResponse, OrganizationResponse, CourseFilterParams
-
+from app.core.models import CourseResponse, SubjectResponse, OrganizationResponse, GradeResponse, DifficultyResponse
+from app.models import get_session, Course, Subject, Organization, Grade, Difficulty
 
 core_router = APIRouter()
 
 
-@core_router.get('/courses/', response_model=List[CourseResponse])
-async def get_courses(course_filter: Annotated[CourseFilterParams, Query()], db: Session = Depends(get_session)):
-    query = select(Course).options(selectinload(Course.organization)).options(selectinload(Course.subject))
-
-    conditions = []
-    if course_filter.classes:
-        conditions.append(
-            or_(
-                *(
-                    and_(Course.min_class <= class_level, Course.max_class >= class_level)
-                    for class_level in course_filter.classes
-                )
-            )
-        )
-    if course_filter.difficulties:
-        conditions.append(Course.difficulty.in_(course_filter.difficulties))
-    if course_filter.query:
-        conditions.append(Course.name.contains(course_filter.query))
-    if course_filter.organizations:
-        conditions.append(Course.organization_id.in_(course_filter.organizations))
-    if course_filter.subjects:
-        conditions.append(Course.subject_id.in_(course_filter.subjects))
-    if conditions:
-        query = query.where(and_(*conditions))
-    courses = db.exec(query.offset(course_filter.offset).limit(course_filter.limit)).all()
-
-    return courses
-
-
-@core_router.get('/courses/{course_id}/', response_model=CourseResponse)
-async def get_course(course_id: int, db: Session = Depends(get_session)):
-    course = db.exec(
-        select(Course)
-        .where(Course.id == course_id)
-        .options(selectinload(Course.organization))
-        .options(selectinload(Course.subject))
-    ).one_or_none()
-
-    if not course:
-        raise HTTPException(status_code=404, detail='Course not found')
-
-    return course
-
-
 @core_router.get('/subjects/', response_model=List[SubjectResponse])
-async def get_subjects(db: Session = Depends(get_session)):
-    subjects = db.exec(select(Subject)).all()
-    return subjects
+def get_subjects(session: Session = Depends(get_session)):
+    return session.exec(select(Subject)).all()
 
 
-@core_router.get('/subjects/{subject_id}/', response_model=SubjectResponse)
-async def get_subject(subject_id: int, db: Session = Depends(get_session)):
-    subject = db.exec(select(Subject).where(Subject.id == subject_id)).one_or_none()
+@core_router.get('/subjects/{id}', response_model=SubjectResponse)
+def get_subject(id: int, session: Session = Depends(get_session)):
+    subject = session.exec(select(Subject).where(Subject.id == id)).first()
     if not subject:
         raise HTTPException(status_code=404, detail='Subject not found')
     return subject
 
 
+@core_router.get('/difficulties/', response_model=List[DifficultyResponse])
+def get_difficulties(session: Session = Depends(get_session)):
+    difficulties = session.exec(select(Difficulty)).all()
+    return difficulties
+
+
+@core_router.get('/difficulties/{id}', response_model=DifficultyResponse)
+def get_difficulty(id: int, session: Session = Depends(get_session)):
+    difficulty = session.exec(select(Difficulty).where(Difficulty.id == id)).first()
+    if not difficulty:
+        raise HTTPException(status_code=404, detail='Difficulty not found')
+    return difficulty
+
+
 @core_router.get('/organizations/', response_model=List[OrganizationResponse])
-async def get_organizations(db: Session = Depends(get_session)):
-    organizations = db.exec(select(Organization)).all()
-    return organizations
+def get_organizations(session: Session = Depends(get_session)):
+    return session.exec(select(Organization)).all()
 
 
-@core_router.get('/organizations/{organization_id}/', response_model=OrganizationResponse)
-async def get_organization(organization_id: int, db: Session = Depends(get_session)):
-    organization = db.exec(select(Organization).where(Organization.id == organization_id)).one_or_none()
+@core_router.get('/organizations/{id}', response_model=OrganizationResponse)
+def get_organization(id: int, session: Session = Depends(get_session)):
+    organization = session.exec(select(Organization).where(Organization.id == id)).first()
     if not organization:
         raise HTTPException(status_code=404, detail='Organization not found')
     return organization
+
+
+@core_router.get('/grades/', response_model=List[GradeResponse])
+def get_grades(session: Session = Depends(get_session)):
+    return session.exec(select(Grade)).all()
+
+
+@core_router.get('/grades/{id}', response_model=GradeResponse)
+def get_grade(id: int, session: Session = Depends(get_session)):
+    grade = session.exec(select(Grade).where(Grade.id == id)).first()
+    if not grade:
+        raise HTTPException(status_code=404, detail='Grade not found')
+    return grade
+
+
+@core_router.get('/courses/', response_model=List[CourseResponse])
+def get_courses(session: Session = Depends(get_session)):
+    return session.exec(
+        select(Course).options(
+            selectinload(Course.subjects),
+            selectinload(Course.grades),
+            selectinload(Course.organization),
+            selectinload(Course.difficulty),
+        )
+    ).all()
+
+
+@core_router.get('/courses/{id}', response_model=CourseResponse)
+def get_course(id: int, session: Session = Depends(get_session)):
+    course = session.exec(
+        select(Course)
+        .where(Course.id == id)
+        .options(
+            selectinload(Course.subjects),
+            selectinload(Course.grades),
+            selectinload(Course.organization),
+            selectinload(Course.difficulty),
+        )
+    ).first()
+    if not course:
+        raise HTTPException(status_code=404, detail='Course not found')
+    return course
