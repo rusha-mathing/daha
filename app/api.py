@@ -8,7 +8,7 @@ from app.router import router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    create_db_and_models()
+    await create_db_and_models()
     yield
 
 
