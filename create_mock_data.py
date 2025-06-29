@@ -2,6 +2,8 @@ import asyncio
 from datetime import date
 
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import sessionmaker
+
 from app.models import (
     create_db_and_models,
     engine,
@@ -15,9 +17,15 @@ from app.models import (
 )
 
 
+AsyncSessionLocal = sessionmaker(
+    bind=engine,
+    class_=AsyncSession,
+    expire_on_commit=False,
+)
+
 async def main():
     await create_db_and_models()
-    async with AsyncSession(engine) as session:
+    async with AsyncSessionLocal() as session:
         # defining subjects
         subject_ai = Subject(
             type='ai',
