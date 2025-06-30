@@ -22,7 +22,7 @@ def main():
         subject_1 = Subject(
             type='test1',
             label='Тестовое направление 1',
-            icon='''<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+            icon="""<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
 	 viewBox="0 0 512 512" xml:space="preserve">
 <polygon style="fill:#E09B2D;" points="356.648,9.866 432.636,85.867 356.648,85.867 "/>
 <g>
@@ -67,7 +67,7 @@ def main():
 	<path style="fill:#333333;" d="M352.557,400.225H232.321c-5.45,0-9.867,4.418-9.867,9.867s4.416,9.867,9.867,9.867h120.237
 		c5.45,0,9.867-4.418,9.867-9.867S358.008,400.225,352.557,400.225z"/>
 </g>
-</svg>''',
+</svg>""",
             color='#ff0000',
             additional_description=[
                 'Описание 1',
@@ -78,7 +78,7 @@ def main():
         subject_2 = Subject(
             type='test2',
             label='Тестовое направление 2',
-            icon='''<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+            icon="""<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
 	 viewBox="0 0 512 512" xml:space="preserve">
 <polygon style="fill:#E09B2D;" points="356.648,9.866 432.636,85.867 356.648,85.867 "/>
 <g>
@@ -123,19 +123,14 @@ def main():
 	<path style="fill:#333333;" d="M352.557,400.225H232.321c-5.45,0-9.867,4.418-9.867,9.867s4.416,9.867,9.867,9.867h120.237
 		c5.45,0,9.867-4.418,9.867-9.867S358.008,400.225,352.557,400.225z"/>
 </g>
-</svg>''',
+</svg>""",
             color='#00ff00',
             additional_description=[
                 'Описание 1',
                 'Описание 2',
             ],
         )
-        session.add_all(
-            [
-                subject_1,
-                subject_2
-            ]
-        )
+        session.add_all([subject_1, subject_2])
         session.commit()  # .id
 
         # defining difficulties
@@ -151,12 +146,7 @@ def main():
             icon='<path d="m16 6 2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"></path>',
             color='#ff9800',
         )
-        session.add_all(
-            [
-                difficulty_beginner,
-                difficulty_intermediate
-            ]
-        )
+        session.add_all([difficulty_beginner, difficulty_intermediate])
         session.commit()  # .id
 
         # defining grades
@@ -257,6 +247,7 @@ def main():
             organization=org_test,
             difficulty=difficulty_beginner,
         )
-        
+
+
 if __name__ == '__main__':
     main()
