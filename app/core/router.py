@@ -5,13 +5,7 @@ from sqlalchemy.orm import selectinload
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from app.core.models import (
-    CourseResponse,
-    SubjectResponse,
-    OrganizationResponse,
-    GradeResponse,
-    DifficultyResponse
-)
+from app.core.models import CourseResponse, SubjectResponse, OrganizationResponse, GradeResponse, DifficultyResponse
 from app.models import get_session, Course, Subject, Organization, Grade, Difficulty
 
 core_router = APIRouter()

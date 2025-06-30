@@ -23,6 +23,7 @@ AsyncSessionLocal = sessionmaker(
     expire_on_commit=False,
 )
 
+
 async def main():
     await create_db_and_models()
     async with AsyncSessionLocal() as session:
