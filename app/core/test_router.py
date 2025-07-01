@@ -1,18 +1,31 @@
 from datetime import date
 
-from fastapi.testclient import TestClient
 import pytest
-from sqlmodel import create_engine, SQLModel, StaticPool, Session, select
+import pytest_asyncio
+from httpx import ASGITransport, AsyncClient
+from psycopg import Connection
+from pytest_postgresql import factories
+from sqlalchemy.ext.asyncio import create_async_engine
+from sqlmodel import SQLModel, select
+from sqlmodel.ext.asyncio.session import AsyncSession as SQLModelAsyncSession
 
 from app.models import Course, Subject, Organization, get_session, Difficulty, Grade, CourseSubjectLink, CourseGradeLink
 from main import api
 
+postgresql_proc = factories.postgresql_proc(dbname='test_db')
+postgresql = factories.postgresql('postgresql_proc')
 
-@pytest.fixture(name='session')
-def session_fixture():
-    engine = create_engine('sqlite://', connect_args={'check_same_thread': False}, poolclass=StaticPool)
-    SQLModel.metadata.create_all(engine)
-    with Session(engine) as session:
+
+@pytest_asyncio.fixture(name='session')
+async def session_fixture(postgresql: Connection):
+    engine = create_async_engine(f"postgresql+asyncpg://"
+                                 f"{postgresql.info.user}:"
+                                 f"{postgresql.info.password}@"
+                                 f"{postgresql.info.host}:{postgresql.info.port}/"
+                                 f"{postgresql.info.dbname}")
+    async with engine.begin() as conn:
+        await conn.run_sync(SQLModel.metadata.create_all)
+    async with SQLModelAsyncSession(bind=engine, expire_on_commit=False) as local_session:
         ai = Subject(
             type='ai',
             label='Искусственный интеллект',
@@ -43,12 +56,12 @@ def session_fixture():
                 'Участники научатся писать оптимальный и читаемый код, работая над реальными проектами.',
             ],
         )
-        session.add_all([ai, robotics, programming])
-        session.commit()
+        local_session.add_all([ai, robotics, programming])
+        await local_session.commit()
         org1 = Organization(name='Coding Academy')
         org2 = Organization(name='Science School')
-        session.add_all([org1, org2])
-        session.commit()
+        local_session.add_all([org1, org2])
+        await local_session.commit()
 
         beginner = Difficulty(
             type='beginner',
@@ -56,14 +69,14 @@ def session_fixture():
             icon='<path d="M5 13.18v4L12 21l7-3.82v-4L12 17zM12 3 1 9l11 6 9-4.91V17h2V9z"></path>',
             color='#4caf50',
         )
-        session.add(beginner)
-        session.commit()
+        local_session.add(beginner)
+        await local_session.commit()
 
         grade_7 = Grade(grade=7)
         grade_8 = Grade(grade=8)
         grade_9 = Grade(grade=9)
-        session.add_all([grade_7, grade_8, grade_9])
-        session.commit()
+        local_session.add_all([grade_7, grade_8, grade_9])
+        await local_session.commit()
         ai_subject_ids = [ai.id, programming.id]
         ai_grade_ids = [grade_7.id, grade_8.id, grade_9.id]
 
@@ -79,14 +92,14 @@ def session_fixture():
             subject_ids=ai_subject_ids,
             grade_ids=ai_grade_ids,
         )
-        session.add(ai_course)
-        session.commit()  # .id
+        local_session.add(ai_course)
+        await local_session.commit()  # .id
 
         for subject_id in ai_subject_ids:
-            session.add(CourseSubjectLink(course_id=ai_course.id, subject_id=subject_id))
+            local_session.add(CourseSubjectLink(course_id=ai_course.id, subject_id=subject_id))
         for grade_id in ai_grade_ids:
-            session.add(CourseGradeLink(course_id=ai_course.id, grade_id=grade_id))
-        session.commit()
+            local_session.add(CourseGradeLink(course_id=ai_course.id, grade_id=grade_id))
+        await local_session.commit()
         python_f_subject_ids = [programming.id]
         python_f_grade_ids = [grade_7.id, grade_8.id, grade_9.id]
 
@@ -102,30 +115,34 @@ def session_fixture():
             subject_ids=python_f_subject_ids,
             grade_ids=python_f_grade_ids,
         )
-        session.add(python_fundementals_course)
-        session.commit()  # .id
+        local_session.add(python_fundementals_course)
+        await local_session.commit()  # .id
 
         for subject_id in python_f_subject_ids:
-            session.add(CourseSubjectLink(course_id=python_fundementals_course.id, subject_id=subject_id))
+            local_session.add(CourseSubjectLink(course_id=python_fundementals_course.id, subject_id=subject_id))
         for grade_id in python_f_grade_ids:
-            session.add(CourseGradeLink(course_id=python_fundementals_course.id, grade_id=grade_id))
-        session.commit()
-        yield session
+            local_session.add(CourseGradeLink(course_id=python_fundementals_course.id, grade_id=grade_id))
+        await local_session.commit()
+        yield local_session
+    async with engine.begin() as conn:
+        await conn.run_sync(SQLModel.metadata.drop_all)
+    await engine.dispose()
 
 
-@pytest.fixture(name='client')
-def client_fixture(session: Session):
-    def get_session_override():
+@pytest_asyncio.fixture(name='client')
+async def client_fixture(session: SQLModelAsyncSession):
+    async def get_session_override():
         return session
 
     api.dependency_overrides[get_session] = get_session_override
-    client = TestClient(api)
-    yield client
+    async with AsyncClient(transport=ASGITransport(api), base_url='http://test', follow_redirects=True) as ac:
+        yield ac
     api.dependency_overrides.clear()
 
 
-def test_get_courses(client: TestClient):
-    response = client.get('/courses/')
+@pytest.mark.asyncio
+async def test_get_courses(client: AsyncClient):
+    response = await client.get('/courses/')
     assert response.status_code == 200
     data = response.json()
     assert len(data) == 2
@@ -145,14 +162,16 @@ def test_get_courses(client: TestClient):
     assert ai['organization'] == 'Coding Academy'
 
 
-def test_get_course_not_found(client: TestClient):
-    response = client.get('/courses/1000/')
+@pytest.mark.asyncio
+async def test_get_course_not_found(client: AsyncClient):
+    response = await client.get('/courses/1000/')
     assert response.status_code == 404
     assert response.json()['detail'] == 'Course not found'
 
 
-def test_get_subjects(client: TestClient):
-    response = client.get('/subjects/')
+@pytest.mark.asyncio
+async def test_get_subjects(client: AsyncClient):
+    response = await client.get('/subjects/')
     assert response.status_code == 200
     data = response.json()
     assert len(data) == 3
@@ -164,8 +183,8 @@ def test_get_subjects(client: TestClient):
     assert ai['id'] is not None
     assert ai['label'] == 'Искусственный интеллект'
     assert (
-        ai['icon']
-        == '<path d="M20 9V7c0-1.1-.9-2-2-2h-3c0-1.66-1.34-3-3-3S9 3.34 9 5H6c-1.1 0-2 .9-2 2v2c-1.66 0-3 1.34-3 3s1.34 3 3 3v4c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-4c1.66 0 3-1.34 3-3s-1.34-3-3-3M7.5 11.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5S9.83 13 9 13s-1.5-.67-1.5-1.5M16 17H8v-2h8zm-1-4c-.83 0-1.5-.67-1.5-1.5S14.17 10 15 10s1.5.67 1.5 1.5S15.83 13 15 13"></path>'
+            ai['icon']
+            == '<path d="M20 9V7c0-1.1-.9-2-2-2h-3c0-1.66-1.34-3-3-3S9 3.34 9 5H6c-1.1 0-2 .9-2 2v2c-1.66 0-3 1.34-3 3s1.34 3 3 3v4c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-4c1.66 0 3-1.34 3-3s-1.34-3-3-3M7.5 11.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5S9.83 13 9 13s-1.5-.67-1.5-1.5M16 17H8v-2h8zm-1-4c-.83 0-1.5-.67-1.5-1.5S14.17 10 15 10s1.5.67 1.5 1.5S15.83 13 15 13"></path>'
     )
     assert ai['color'] == '#3f51b5'
     assert ai['additional_description'] == [
@@ -174,16 +193,17 @@ def test_get_subjects(client: TestClient):
     ]
 
 
-def test_get_subject_success(client: TestClient, session: Session):
-    subject = session.exec(select(Subject).where(Subject.type == 'ai')).first()
-    response = client.get(f'/subjects/{subject.id}/')
+@pytest.mark.asyncio
+async def test_get_subject_success(client: AsyncClient, session: SQLModelAsyncSession):
+    subject = (await session.exec(select(Subject).where(Subject.type == 'ai'))).first()
+    response = await client.get(f'/subjects/{subject.id}/')
     assert response.status_code == 200
     data = response.json()
     assert data['type'] == 'ai'
     assert data['label'] == 'Искусственный интеллект'
     assert (
-        data['icon']
-        == '<path d="M20 9V7c0-1.1-.9-2-2-2h-3c0-1.66-1.34-3-3-3S9 3.34 9 5H6c-1.1 0-2 .9-2 2v2c-1.66 0-3 1.34-3 3s1.34 3 3 3v4c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-4c1.66 0 3-1.34 3-3s-1.34-3-3-3M7.5 11.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5S9.83 13 9 13s-1.5-.67-1.5-1.5M16 17H8v-2h8zm-1-4c-.83 0-1.5-.67-1.5-1.5S14.17 10 15 10s1.5.67 1.5 1.5S15.83 13 15 13"></path>'
+            data['icon']
+            == '<path d="M20 9V7c0-1.1-.9-2-2-2h-3c0-1.66-1.34-3-3-3S9 3.34 9 5H6c-1.1 0-2 .9-2 2v2c-1.66 0-3 1.34-3 3s1.34 3 3 3v4c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-4c1.66 0 3-1.34 3-3s-1.34-3-3-3M7.5 11.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5S9.83 13 9 13s-1.5-.67-1.5-1.5M16 17H8v-2h8zm-1-4c-.83 0-1.5-.67-1.5-1.5S14.17 10 15 10s1.5.67 1.5 1.5S15.83 13 15 13"></path>'
     )
     assert data['color'] == '#3f51b5'
     assert data['additional_description'] == [
@@ -192,14 +212,16 @@ def test_get_subject_success(client: TestClient, session: Session):
     ]
 
 
-def test_get_subject_not_found(client: TestClient):
-    response = client.get('/subjects/999/')
+@pytest.mark.asyncio
+async def test_get_subject_not_found(client: AsyncClient):
+    response = await client.get('/subjects/999/')
     assert response.status_code == 404
     assert response.json()['detail'] == 'Subject not found'
 
 
-def test_get_organizations(client: TestClient):
-    response = client.get('/organizations/')
+@pytest.mark.asyncio
+async def test_get_organizations(client: AsyncClient):
+    response = await client.get('/organizations/')
     assert response.status_code == 200
     data = response.json()
     assert len(data) == 2
@@ -212,23 +234,26 @@ def test_get_organizations(client: TestClient):
     assert science_school['name'] == 'Science School'
 
 
-def test_get_organization_success(client: TestClient, session: Session):
-    org = session.exec(select(Organization).where(Organization.name == 'Coding Academy')).first()
-    response = client.get(f'/organizations/{org.id}/')
+@pytest.mark.asyncio
+async def test_get_organization_success(client: AsyncClient, session: SQLModelAsyncSession):
+    org = (await session.exec(select(Organization).where(Organization.name == 'Coding Academy'))).first()
+    response = await client.get(f'/organizations/{org.id}/')
     assert response.status_code == 200
     data = response.json()
     assert data['name'] == 'Coding Academy'
 
 
-def test_get_organization_not_found(client: TestClient):
-    response = client.get('/organizations/999/')
+@pytest.mark.asyncio
+async def test_get_organization_not_found(client: AsyncClient):
+    response = await client.get('/organizations/999/')
     assert response.status_code == 404
     assert response.json()['detail'] == 'Organization not found'
 
 
-def test_subject_courses_relation(client: TestClient, session: Session):
-    subject = session.exec(select(Subject).where(Subject.type == 'programming')).first()
-    response = client.get(f'/subjects/{subject.id}/')
+@pytest.mark.asyncio
+async def test_subject_courses_relation(client: AsyncClient, session: SQLModelAsyncSession):
+    subject = (await session.exec(select(Subject).where(Subject.type == 'programming'))).first()
+    response = await client.get(f'/subjects/{subject.id}/')
     data = response.json()
 
     assert 'courses' not in data
