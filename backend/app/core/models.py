@@ -21,20 +21,26 @@ class SubjectResponse(FilterResponse):
 class DifficultyResponse(FilterResponse):
     pass
 
+
 class SubjectCreateResponse(BaseModel):
     id: int
+
 
 class CourseCreateResponse(BaseModel):
     id: int
 
+
 class OrganizationCreateResponse(BaseModel):
     id: int
+
 
 class GradeCreateResponse(BaseModel):
     id: int
 
+
 class DifficultyCreateResponse(BaseModel):
     id: int
+
 
 class OrganizationResponse(BaseModel):
     id: int
@@ -120,10 +126,12 @@ class CourseCreate(BaseModel):
     subjects: List[str]
     organization: str
 
+
 class CourseSubjectLink(SQLModel, table=True):
-    course_id: int = Field(foreign_key="course.id", primary_key=True)
-    subject_id: int = Field(foreign_key="subject.id", primary_key=True)
+    course_id: int = Field(foreign_key='course.id', primary_key=True)
+    subject_id: int = Field(foreign_key='subject.id', primary_key=True)
+
 
 class CourseGradeLink(SQLModel, table=True):
-    course_id: int = Field(foreign_key="course.id", primary_key=True)
-    grade_id: int = Field(foreign_key="grade.id", primary_key=True)
+    course_id: int = Field(foreign_key='course.id', primary_key=True)
+    grade_id: int = Field(foreign_key='grade.id', primary_key=True)
