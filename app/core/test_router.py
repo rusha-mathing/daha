@@ -18,11 +18,13 @@ postgresql = factories.postgresql('postgresql_proc')
 
 @pytest_asyncio.fixture(name='session')
 async def session_fixture(postgresql: Connection):
-    engine = create_async_engine(f"postgresql+asyncpg://"
-                                 f"{postgresql.info.user}:"
-                                 f"{postgresql.info.password}@"
-                                 f"{postgresql.info.host}:{postgresql.info.port}/"
-                                 f"{postgresql.info.dbname}")
+    engine = create_async_engine(
+        f'postgresql+asyncpg://'
+        f'{postgresql.info.user}:'
+        f'{postgresql.info.password}@'
+        f'{postgresql.info.host}:{postgresql.info.port}/'
+        f'{postgresql.info.dbname}'
+    )
     async with engine.begin() as conn:
         await conn.run_sync(SQLModel.metadata.create_all)
     async with SQLModelAsyncSession(bind=engine, expire_on_commit=False) as local_session:
@@ -183,8 +185,8 @@ async def test_get_subjects(client: AsyncClient):
     assert ai['id'] is not None
     assert ai['label'] == 'Искусственный интеллект'
     assert (
-            ai['icon']
-            == '<path d="M20 9V7c0-1.1-.9-2-2-2h-3c0-1.66-1.34-3-3-3S9 3.34 9 5H6c-1.1 0-2 .9-2 2v2c-1.66 0-3 1.34-3 3s1.34 3 3 3v4c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-4c1.66 0 3-1.34 3-3s-1.34-3-3-3M7.5 11.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5S9.83 13 9 13s-1.5-.67-1.5-1.5M16 17H8v-2h8zm-1-4c-.83 0-1.5-.67-1.5-1.5S14.17 10 15 10s1.5.67 1.5 1.5S15.83 13 15 13"></path>'
+        ai['icon']
+        == '<path d="M20 9V7c0-1.1-.9-2-2-2h-3c0-1.66-1.34-3-3-3S9 3.34 9 5H6c-1.1 0-2 .9-2 2v2c-1.66 0-3 1.34-3 3s1.34 3 3 3v4c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-4c1.66 0 3-1.34 3-3s-1.34-3-3-3M7.5 11.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5S9.83 13 9 13s-1.5-.67-1.5-1.5M16 17H8v-2h8zm-1-4c-.83 0-1.5-.67-1.5-1.5S14.17 10 15 10s1.5.67 1.5 1.5S15.83 13 15 13"></path>'
     )
     assert ai['color'] == '#3f51b5'
     assert ai['additional_description'] == [
@@ -202,8 +204,8 @@ async def test_get_subject_success(client: AsyncClient, session: SQLModelAsyncSe
     assert data['type'] == 'ai'
     assert data['label'] == 'Искусственный интеллект'
     assert (
-            data['icon']
-            == '<path d="M20 9V7c0-1.1-.9-2-2-2h-3c0-1.66-1.34-3-3-3S9 3.34 9 5H6c-1.1 0-2 .9-2 2v2c-1.66 0-3 1.34-3 3s1.34 3 3 3v4c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-4c1.66 0 3-1.34 3-3s-1.34-3-3-3M7.5 11.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5S9.83 13 9 13s-1.5-.67-1.5-1.5M16 17H8v-2h8zm-1-4c-.83 0-1.5-.67-1.5-1.5S14.17 10 15 10s1.5.67 1.5 1.5S15.83 13 15 13"></path>'
+        data['icon']
+        == '<path d="M20 9V7c0-1.1-.9-2-2-2h-3c0-1.66-1.34-3-3-3S9 3.34 9 5H6c-1.1 0-2 .9-2 2v2c-1.66 0-3 1.34-3 3s1.34 3 3 3v4c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-4c1.66 0 3-1.34 3-3s-1.34-3-3-3M7.5 11.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5S9.83 13 9 13s-1.5-.67-1.5-1.5M16 17H8v-2h8zm-1-4c-.83 0-1.5-.67-1.5-1.5S14.17 10 15 10s1.5.67 1.5 1.5S15.83 13 15 13"></path>'
     )
     assert data['color'] == '#3f51b5'
     assert data['additional_description'] == [
