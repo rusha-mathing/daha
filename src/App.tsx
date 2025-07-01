@@ -1,5 +1,5 @@
 import { CssBaseline, Box, ThemeProvider } from '@mui/material';
-import MainPage from './components/layout/MainPage';
+import MainPage from './components/MainPage.tsx';
 import theme from './theme/theme';
 
 function App() {
