@@ -260,69 +260,78 @@ async def test_subject_courses_relation(client: AsyncClient, session: SQLModelAs
 
     assert 'courses' not in data
 
+
 @pytest.mark.asyncio
 async def test_create_difficulty(client: AsyncClient):
     difficulty_data = {
-        "type": "NewDifficulty",
-        "label": "Новая сложность",
-        "icon": "new-difficulty-icon",
-        "color": "#000000",
+        'type': 'NewDifficulty',
+        'label': 'Новая сложность',
+        'icon': 'new-difficulty-icon',
+        'color': '#000000',
     }
-    response = await client.post("/difficulties/", json=difficulty_data)
+    response = await client.post('/difficulties/', json=difficulty_data)
     assert response.status_code == 201
     data = response.json()
-    assert "id" in data
-    assert isinstance(data["id"], int)
+    assert 'id' in data
+    assert isinstance(data['id'], int)
+
+
 @pytest.mark.asyncio
 async def test_create_organization(client: AsyncClient):
     organization_data = {
-        "name": "New Organization",
+        'name': 'New Organization',
     }
-    response = await client.post("/organizations/", json=organization_data)
+    response = await client.post('/organizations/', json=organization_data)
     assert response.status_code == 201
     data = response.json()
-    assert "id" in data
-    assert isinstance(data["id"], int)
+    assert 'id' in data
+    assert isinstance(data['id'], int)
+
+
 @pytest.mark.asyncio
 async def test_create_grade(client: AsyncClient):
     grade_data = {
-        "grade": 10,
+        'grade': 10,
     }
-    response = await client.post("/grades/", json=grade_data)
+    response = await client.post('/grades/', json=grade_data)
     assert response.status_code == 201
     data = response.json()
-    assert "id" in data
-    assert isinstance(data["id"], int)
+    assert 'id' in data
+    assert isinstance(data['id'], int)
+
+
 @pytest.mark.asyncio
 async def test_create_course(client: AsyncClient):
     course_data = {
-        "title": "New Course",
-        "description": "New Course Description",
-        "start_date": "2024-01-01",  
-        "end_date": "2024-06-01",   
-        "url": "https://example.com",
-        "image_url": "https://example.com/image.jpg",
-        "organization": "Some Organization", 
-        "difficulty": "Some Difficulty", 
-        "subjects": [],
-        "grades": []
+        'title': 'New Course',
+        'description': 'New Course Description',
+        'start_date': '2024-01-01',
+        'end_date': '2024-06-01',
+        'url': 'https://example.com',
+        'image_url': 'https://example.com/image.jpg',
+        'organization': 'Some Organization',
+        'difficulty': 'Some Difficulty',
+        'subjects': [],
+        'grades': [],
     }
-    response = await client.post("/courses/", json=course_data)
+    response = await client.post('/courses/', json=course_data)
     assert response.status_code == 201
     data = response.json()
-    assert "id" in data
-    assert isinstance(data["id"], int)
+    assert 'id' in data
+    assert isinstance(data['id'], int)
+
+
 @pytest.mark.asyncio
 async def test_create_subject(client: AsyncClient):
     subject_data = {
-        "type": "NewSubject",
-        "label": "Новый предмет",
-        "icon": "new-icon",
-        "color": "#ffffff",
-        "additional_description": ["Описание 1", "Описание 2"],
+        'type': 'NewSubject',
+        'label': 'Новый предмет',
+        'icon': 'new-icon',
+        'color': '#ffffff',
+        'additional_description': ['Описание 1', 'Описание 2'],
     }
-    response = await client.post("/subjects/", json=subject_data)
+    response = await client.post('/subjects/', json=subject_data)
     assert response.status_code == 201
     data = response.json()
-    assert "id" in data 
-    assert isinstance(data["id"], int) 
+    assert 'id' in data
+    assert isinstance(data['id'], int)

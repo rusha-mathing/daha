@@ -7,7 +7,13 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 
 from app.core.models import CourseResponse, SubjectResponse, OrganizationResponse, GradeResponse, DifficultyResponse
 from app.models import get_session, Course, Subject, Organization, Grade, Difficulty
-from app.core.models import CourseCreateResponse, OrganizationCreateResponse, GradeCreateResponse, DifficultyCreateResponse, SubjectCreateResponse
+from app.core.models import (
+    CourseCreateResponse,
+    OrganizationCreateResponse,
+    GradeCreateResponse,
+    DifficultyCreateResponse,
+    SubjectCreateResponse,
+)
 from app.core.models import CourseCreate, OrganizationCreate, GradeCreate, DifficultyCreate, SubjectCreate
 from app.models import CourseGradeLink, CourseSubjectLink
 
@@ -119,6 +125,8 @@ async def create_subject(subject: SubjectCreate, session: AsyncSession = Depends
 
 
 core_router.post('/difficulties/', response_model=DifficultyCreateResponse, status_code=status.HTTP_201_CREATED)
+
+
 async def create_difficulty(difficulty: DifficultyCreate, session: AsyncSession = Depends(get_session)):
     try:
         db_difficulty = Difficulty(**difficulty.model_dump(exclude_unset=True))
@@ -156,6 +164,7 @@ async def create_grade(grade: GradeCreate, session: AsyncSession = Depends(get_s
         await session.rollback()
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
+
 @core_router.post('/courses/', response_model=CourseCreateResponse, status_code=status.HTTP_201_CREATED)
 async def create_course(course: CourseCreate, session: AsyncSession = Depends(get_session)):
     try:
@@ -163,17 +172,17 @@ async def create_course(course: CourseCreate, session: AsyncSession = Depends(ge
         db_organization = await session.get(Organization, course.organization_id)
         db_subjects = await session.execute(select(Subject).where(Subject.id.in_(course.subject_ids)))
         db_grades = await session.execute(select(Grade).where(Grade.id.in_(course.grade_ids)))
-        db_subjects = db_subjects.scalars().all() 
+        db_subjects = db_subjects.scalars().all()
         db_grades = db_grades.scalars().all()
 
         if not db_difficulty:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Difficulty not found")
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Difficulty not found')
         if not db_organization:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Organization not found")
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Organization not found')
         if len(db_subjects) != len(course.subject_ids):
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="One or more subjects not found")
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='One or more subjects not found')
         if len(db_grades) != len(course.grade_ids):
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="One or more grades not found")
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='One or more grades not found')
 
         db_course = Course(
             title=course.title,
@@ -204,7 +213,7 @@ async def create_course(course: CourseCreate, session: AsyncSession = Depends(ge
 
     except HTTPException as e:
         await session.rollback()
-        raise e  
+        raise e
     except Exception as e:
         await session.rollback()
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
