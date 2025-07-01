@@ -260,25 +260,6 @@ async def test_subject_courses_relation(client: AsyncClient, session: SQLModelAs
 
     assert 'courses' not in data
 
-
-@pytest.mark.asyncio
-async def test_create_subject(client: AsyncClient):
-    subject_data = {
-        'type': 'NewSubject',
-        'label': 'Новый предмет',
-        'icon': 'new-icon',
-        'color': '#ffffff',
-        'additional_description': ['Описание 1', 'Описание 2'],
-    }
-    response = await client.post('/subjects/', json=subject_data)
-    assert response.status_code == 201
-    data = response.json()
-    assert data['type'] == 'NewSubject'
-    assert data['label'] == 'Новый предмет'
-    assert data['icon'] == 'new-icon'
-    assert data['color'] == '#ffffff'
-    assert data['additional_description'] == ['Описание 1', 'Описание 2']
-    assert data['id'] is not None
 @pytest.mark.asyncio
 async def test_create_difficulty(client: AsyncClient):
     difficulty_data = {

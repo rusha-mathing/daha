@@ -2,7 +2,7 @@ from datetime import date
 from typing import List
 
 from pydantic import BaseModel, ConfigDict, field_validator
-
+from sqlmodel import SQLModel, Field
 from app.models import Grade, Difficulty, Subject, Organization
 
 
@@ -119,3 +119,11 @@ class CourseCreate(BaseModel):
     difficulty: str
     subjects: List[str]
     organization: str
+
+class CourseSubjectLink(SQLModel, table=True):
+    course_id: int = Field(foreign_key="course.id", primary_key=True)
+    subject_id: int = Field(foreign_key="subject.id", primary_key=True)
+
+class CourseGradeLink(SQLModel, table=True):
+    course_id: int = Field(foreign_key="course.id", primary_key=True)
+    grade_id: int = Field(foreign_key="grade.id", primary_key=True)

@@ -9,6 +9,7 @@ from app.core.models import CourseResponse, SubjectResponse, OrganizationRespons
 from app.models import get_session, Course, Subject, Organization, Grade, Difficulty
 from app.core.models import CourseCreateResponse, OrganizationCreateResponse, GradeCreateResponse, DifficultyCreateResponse, SubjectCreateResponse
 from app.core.models import CourseCreate, OrganizationCreate, GradeCreate, DifficultyCreate, SubjectCreate
+from app.models import CourseGradeLink, CourseSubjectLink
 
 core_router = APIRouter()
 
@@ -155,15 +156,55 @@ async def create_grade(grade: GradeCreate, session: AsyncSession = Depends(get_s
         await session.rollback()
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
-
-@core_router.post('/grades/', response_model=GradeCreateResponse, status_code=status.HTTP_201_CREATED)
-async def create_grade(grade: GradeCreate, session: AsyncSession = Depends(get_session)):
+@core_router.post('/courses/', response_model=CourseCreateResponse, status_code=status.HTTP_201_CREATED)
+async def create_course(course: CourseCreate, session: AsyncSession = Depends(get_session)):
     try:
-        db_grade = Grade(**grade.model_dump(exclude_unset=True))
-        session.add(db_grade)
+        db_difficulty = await session.get(Difficulty, course.difficulty_id)
+        db_organization = await session.get(Organization, course.organization_id)
+        db_subjects = await session.execute(select(Subject).where(Subject.id.in_(course.subject_ids)))
+        db_grades = await session.execute(select(Grade).where(Grade.id.in_(course.grade_ids)))
+        db_subjects = db_subjects.scalars().all() 
+        db_grades = db_grades.scalars().all()
+
+        if not db_difficulty:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Difficulty not found")
+        if not db_organization:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Organization not found")
+        if len(db_subjects) != len(course.subject_ids):
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="One or more subjects not found")
+        if len(db_grades) != len(course.grade_ids):
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="One or more grades not found")
+
+        db_course = Course(
+            title=course.title,
+            description=course.description,
+            start_date=course.start_date,
+            end_date=course.end_date,
+            url=course.url,
+            image_url=course.image_url,
+            organization=db_organization,
+            difficulty=db_difficulty,
+        )
+
+        session.add(db_course)
         await session.commit()
-        await session.refresh(db_grade)
-        return GradeCreateResponse(id=db_grade.id)
+        await session.refresh(db_course)
+
+        for subject in db_subjects:
+            course_subject_link = CourseSubjectLink(course_id=db_course.id, subject_id=subject.id)
+            session.add(course_subject_link)
+
+        for grade in db_grades:
+            course_grade_link = CourseGradeLink(course_id=db_course.id, grade_id=grade.id)
+            session.add(course_grade_link)
+
+        await session.commit()
+
+        return CourseCreateResponse(id=db_course.id)
+
+    except HTTPException as e:
+        await session.rollback()
+        raise e  
     except Exception as e:
         await session.rollback()
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
