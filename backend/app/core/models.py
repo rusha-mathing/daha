@@ -69,3 +69,39 @@ class CourseResponse(BaseModel):
     @classmethod
     def serialize_organization(cls, organization: Organization) -> str:
         return organization.name
+
+
+class SubjectCreate(BaseModel):
+    type: str
+    label: str
+    icon: str
+    color: str
+    additional_description: List[str]
+
+
+class DifficultyCreate(BaseModel):
+    type: str
+    label: str
+    icon: str
+    color: str
+
+
+class OrganizationCreate(BaseModel):
+    name: str
+
+
+class GradeCreate(BaseModel):
+    grade: int
+
+
+class CourseCreate(BaseModel):
+    title: str
+    description: str
+    start_date: date
+    end_date: date
+    url: str
+    image_url: str
+    grades: List[int]
+    difficulty: str
+    subjects: List[str]
+    organization: str
