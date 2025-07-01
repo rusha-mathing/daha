@@ -7,7 +7,8 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 
 from app.core.models import CourseResponse, SubjectResponse, OrganizationResponse, GradeResponse, DifficultyResponse
 from app.models import get_session, Course, Subject, Organization, Grade, Difficulty
-from app.core.models import CourseCreate, GradeCreate, OrganizationCreate, DifficultyCreate, SubjectCreate
+from app.core.models import CourseCreateResponse, OrganizationCreateResponse, GradeCreateResponse, DifficultyCreateResponse, SubjectCreateResponse
+from app.core.models import CourseCreate, OrganizationCreate, GradeCreate, DifficultyCreate, SubjectCreate
 
 core_router = APIRouter()
 
@@ -103,66 +104,66 @@ async def get_course(id: int, session: AsyncSession = Depends(get_session)):
     return course
 
 
-@core_router.post('/subjects/', response_model=SubjectResponse, status_code=status.HTTP_201_CREATED)
+@core_router.post('/subjects/', response_model=SubjectCreateResponse, status_code=status.HTTP_201_CREATED)
 async def create_subject(subject: SubjectCreate, session: AsyncSession = Depends(get_session)):
     try:
-        db_subject = Subject.from_orm(subject)
+        db_subject = Subject(**subject.model_dump(exclude_unset=True))
         session.add(db_subject)
         await session.commit()
         await session.refresh(db_subject)
-        return db_subject
+        return SubjectCreateResponse(id=db_subject.id)
     except Exception as e:
         await session.rollback()
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@core_router.post('/difficulties/', response_model=DifficultyResponse, status_code=status.HTTP_201_CREATED)
+core_router.post('/difficulties/', response_model=DifficultyCreateResponse, status_code=status.HTTP_201_CREATED)
 async def create_difficulty(difficulty: DifficultyCreate, session: AsyncSession = Depends(get_session)):
     try:
-        db_difficulty = Difficulty.from_orm(difficulty)
+        db_difficulty = Difficulty(**difficulty.model_dump(exclude_unset=True))
         session.add(db_difficulty)
         await session.commit()
         await session.refresh(db_difficulty)
-        return db_difficulty
+        return DifficultyCreateResponse(id=db_difficulty.id)
     except Exception as e:
         await session.rollback()
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 
-@core_router.post('/organizations/', response_model=OrganizationResponse, status_code=status.HTTP_201_CREATED)
+@core_router.post('/organizations/', response_model=OrganizationCreateResponse, status_code=status.HTTP_201_CREATED)
 async def create_organization(organization: OrganizationCreate, session: AsyncSession = Depends(get_session)):
     try:
-        db_organization = Organization.from_orm(organization)
+        db_organization = Organization(**organization.model_dump(exclude_unset=True))
         session.add(db_organization)
         await session.commit()
         await session.refresh(db_organization)
-        return db_organization
+        return OrganizationCreateResponse(id=db_organization.id)
     except Exception as e:
         await session.rollback()
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 
-@core_router.post('/grades/', response_model=GradeResponse, status_code=status.HTTP_201_CREATED)
+@core_router.post('/grades/', response_model=GradeCreateResponse, status_code=status.HTTP_201_CREATED)
 async def create_grade(grade: GradeCreate, session: AsyncSession = Depends(get_session)):
     try:
-        db_grade = Grade.from_orm(grade)
+        db_grade = Grade(**grade.model_dump(exclude_unset=True))
         session.add(db_grade)
         await session.commit()
         await session.refresh(db_grade)
-        return db_grade
+        return GradeCreateResponse(id=db_grade.id)
     except Exception as e:
         await session.rollback()
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 
-@core_router.post('/courses/', response_model=CourseResponse, status_code=status.HTTP_201_CREATED)
-async def create_course(course: CourseCreate, session: AsyncSession = Depends(get_session)):
+@core_router.post('/grades/', response_model=GradeCreateResponse, status_code=status.HTTP_201_CREATED)
+async def create_grade(grade: GradeCreate, session: AsyncSession = Depends(get_session)):
     try:
-        db_course = Course.from_orm(course)
-        session.add(db_course)
+        db_grade = Grade(**grade.model_dump(exclude_unset=True))
+        session.add(db_grade)
         await session.commit()
-        await session.refresh(db_course)
-        return db_course
+        await session.refresh(db_grade)
+        return GradeCreateResponse(id=db_grade.id)
     except Exception as e:
         await session.rollback()
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
