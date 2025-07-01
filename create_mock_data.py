@@ -1,6 +1,8 @@
+import asyncio
 from datetime import date
 
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import sessionmaker
 
 from app.models import (
     create_db_and_models,
@@ -15,9 +17,16 @@ from app.models import (
 )
 
 
-def main():
-    create_db_and_models()
-    with Session(engine) as session:
+AsyncSessionLocal = sessionmaker(
+    bind=engine,
+    class_=AsyncSession,
+    expire_on_commit=False,
+)
+
+
+async def main():
+    await create_db_and_models()
+    async with AsyncSessionLocal() as session:
         # defining subjects
         subject_ai = Subject(
             type='ai',
@@ -104,7 +113,7 @@ def main():
                 subject_science,
             ]
         )
-        session.commit()  # .id
+        await session.commit()  # .id
 
         # defining difficulties
         difficulty_beginner = Difficulty(
@@ -132,7 +141,7 @@ def main():
                 difficulty_advanced,
             ]
         )
-        session.commit()  # .id
+        await session.commit()  # .id
 
         # defining grades
         grade_7 = Grade(grade=7)
@@ -149,33 +158,34 @@ def main():
                 grade_11,
             ]
         )
-        session.commit()  # .id
+        await session.commit()  # .id
 
         # define organizations
-        def define_organization(name):
+        async def define_organization(name):
             org = Organization(name=name)
             session.add(org)
-            session.commit()  # .id
+            await session.commit()  # .id
+            await session.refresh(org)
             return org
 
-        org_yandex = define_organization('Яндекс')
-        org_sirius = define_organization('Сириус')
-        org_inno = define_organization('Иннополис')
-        org_skoltex = define_organization('Сколтех')
-        org_vk = define_organization('VK')
-        org_sbercyber = define_organization('СберКибер')
-        org_kaspersky = define_organization('Лаборатория Касперского')
-        org_cse = define_organization('Высшая школа экономики')
-        org_skolkovo = define_organization('Сколково')
-        org_cbrf = define_organization('Центральный банк РФ')
-        org_tinkoff = define_organization('Тинькофф')
-        org_mfti = define_organization('МФТИ')
-        org_msu = define_organization('МГУ им. Ломоносова')
-        org_letovo = define_organization('Летово')
-        org_sber = define_organization('Сбер')
+        org_yandex = await define_organization('Яндекс')
+        org_sirius = await define_organization('Сириус')
+        org_inno = await define_organization('Иннополис')
+        org_skoltex = await define_organization('Сколтех')
+        org_vk = await define_organization('VK')
+        org_sbercyber = await define_organization('СберКибер')
+        org_kaspersky = await define_organization('Лаборатория Касперского')
+        org_cse = await define_organization('Высшая школа экономики')
+        org_skolkovo = await define_organization('Сколково')
+        org_cbrf = await define_organization('Центральный банк РФ')
+        org_tinkoff = await define_organization('Тинькофф')
+        org_mfti = await define_organization('МФТИ')
+        org_msu = await define_organization('МГУ им. Ломоносова')
+        org_letovo = await define_organization('Летово')
+        org_sber = await define_organization('Сбер')
 
         # defining courses based on what was defined earlier
-        def define_course(
+        async def define_course(
             title,
             description,
             subjects,
@@ -200,16 +210,16 @@ def main():
                 grade_ids=[i.id for i in grades],
             )
             session.add(course)
-            session.commit()  # .id
+            await session.commit()  # .id
 
             for subject in subjects:
                 session.add(CourseSubjectLink(course_id=course.id, subject_id=subject.id))
             for grade in grades:
                 session.add(CourseGradeLink(course_id=course.id, grade_id=grade.id))
-            session.commit()
+            await session.commit()
             return course
 
-        define_course(
+        await define_course(
             title='Основы машинного обучения и нейронных сетей',
             description='Ведут специалисты из Яндекса с реальными кейсами из индустрии.',
             subjects=[subject_ai],
@@ -221,7 +231,7 @@ def main():
             organization=org_yandex,
             difficulty=difficulty_intermediate,
         )
-        define_course(
+        await define_course(
             title='Python для искусственного интеллекта',
             description='Поможет подготовиться к участию в олимпиадах по программированию.',
             subjects=[subject_ai, subject_programming],
@@ -233,7 +243,7 @@ def main():
             organization=org_sirius,
             difficulty=difficulty_beginner,
         )
-        define_course(
+        await define_course(
             title='Робототехника для начинающих',
             description='Включает практические занятия со сборкой реальных роботов.',
             subjects=[subject_robotics],
@@ -245,7 +255,7 @@ def main():
             organization=org_inno,
             difficulty=difficulty_beginner,
         )
-        define_course(
+        await define_course(
             title='Программирование микроконтроллеров Arduino',
             description='После курса сможешь создавать собственные устройства умного дома.',
             subjects=[subject_robotics, subject_programming],
@@ -257,7 +267,7 @@ def main():
             organization=org_skoltex,
             difficulty=difficulty_beginner,
         )
-        define_course(
+        await define_course(
             title='Разработка игр на Unity',
             description='Возможность добавить проекты в портфолио для будущих работодателей.',
             subjects=[subject_programming],
@@ -269,7 +279,7 @@ def main():
             organization=org_vk,
             difficulty=difficulty_intermediate,
         )
-        define_course(
+        await define_course(
             title='Основы кибербезопасности',
             description='Преподают действующие эксперты по информационной безопасности.',
             subjects=[subject_cybersecurity],
@@ -281,7 +291,7 @@ def main():
             organization=org_sbercyber,
             difficulty=difficulty_beginner,
         )
-        define_course(
+        await define_course(
             title='Этичный хакинг и тестирование на проникновение',
             description='Помогает развить аналитическое мышление и внимание к деталям.',
             subjects=[subject_cybersecurity, subject_programming],
@@ -293,7 +303,7 @@ def main():
             organization=org_kaspersky,
             difficulty=difficulty_advanced,
         )
-        define_course(
+        await define_course(
             title='Предпринимательство для школьников',
             description='Возможность запустить свой первый бизнес-проект под наставничеством.',
             subjects=[subject_entrepreneurship],
@@ -305,7 +315,7 @@ def main():
             organization=org_cse,
             difficulty=difficulty_beginner,
         )
-        define_course(
+        await define_course(
             title='От идеи до стартапа',
             description='Шанс получить финансирование от инвесторов для лучших проектов.',
             subjects=[subject_entrepreneurship],
@@ -317,7 +327,7 @@ def main():
             organization=org_skolkovo,
             difficulty=difficulty_intermediate,
         )
-        define_course(
+        await define_course(
             title='Личные финансы для подростков',
             description='Научит грамотно управлять своим бюджетом и планировать накопления.',
             subjects=[subject_financial_literacy],
@@ -329,7 +339,7 @@ def main():
             organization=org_cbrf,
             difficulty=difficulty_beginner,
         )
-        define_course(
+        await define_course(
             title='Инвестирование для начинающих',
             description='Практические навыки работы с биржевыми инструментами на учебном счете.',
             subjects=[subject_financial_literacy],
@@ -341,7 +351,7 @@ def main():
             organization=org_tinkoff,
             difficulty=difficulty_intermediate,
         )
-        define_course(
+        await define_course(
             title='Современная физика для школьников',
             description='Поможет подготовиться к олимпиадам и поступлению в технические вузы.',
             subjects=[subject_science],
@@ -353,7 +363,7 @@ def main():
             organization=org_mfti,
             difficulty=difficulty_advanced,
         )
-        define_course(
+        await define_course(
             title='Экспериментальная химия',
             description='Доступ к лабораториям с современным оборудованием.',
             subjects=[subject_science],
@@ -365,7 +375,7 @@ def main():
             organization=org_msu,
             difficulty=difficulty_intermediate,
         )
-        define_course(
+        await define_course(
             title='Биология будущего',
             description='Включает экскурсии в исследовательские центры и работу с учеными.',
             subjects=[subject_science],
@@ -377,7 +387,7 @@ def main():
             organization=org_letovo,
             difficulty=difficulty_intermediate,
         )
-        define_course(
+        await define_course(
             title='Астрономия и космические технологии',
             description='Возможность наблюдать за небесными телами через профессиональные телескопы.',
             subjects=[subject_science],
@@ -389,7 +399,7 @@ def main():
             organization=org_sirius,
             difficulty=difficulty_beginner,
         )
-        define_course(
+        await define_course(
             title='Веб-разработка для начинающих',
             description='Сертификат признается IT-компаниями при приеме на стажировку.',
             subjects=[subject_programming],
@@ -401,7 +411,7 @@ def main():
             organization=org_yandex,
             difficulty=difficulty_beginner,
         )
-        define_course(
+        await define_course(
             title='Криптография и защита данных',
             description='Разработан совместно с лабораторией Касперского.',
             subjects=[subject_cybersecurity, subject_programming],
@@ -413,7 +423,7 @@ def main():
             organization=org_cse,
             difficulty=difficulty_advanced,
         )
-        define_course(
+        await define_course(
             title='Компьютерное зрение и распознавание образов',
             description='Занятия проходят на оборудовании, используемом в реальных проектах.',
             subjects=[subject_ai, subject_programming],
@@ -428,4 +438,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    asyncio.get_event_loop().run_until_complete(main())

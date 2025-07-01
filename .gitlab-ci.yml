@@ -6,11 +6,18 @@ ruff:
   stage: ruff
   image: ghcr.io/astral-sh/uv:python3.12-alpine
   script:
+    - apk add --no-cache gcc musl-dev linux-headers
     - uv run --dev ruff format --check --diff
     - uv run --dev ruff check
 
 test:
   stage: test
   image: ghcr.io/astral-sh/uv:python3.12-alpine
+  services:
+    - name: postgres:latest
+      alias: postgres
   script:
-    - uv run --group dev pytest
+    - apk add --no-cache postgresql postgresql-dev gcc musl-dev linux-headers shadow
+    - adduser -D -u 1000 testuser
+    - chown -R testuser .
+    - su - testuser -c "cd $PWD && uv run --group dev pytest"
