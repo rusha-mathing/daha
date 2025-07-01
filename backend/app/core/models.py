@@ -21,6 +21,20 @@ class SubjectResponse(FilterResponse):
 class DifficultyResponse(FilterResponse):
     pass
 
+class SubjectCreateResponse(BaseModel):
+    id: int
+
+class CourseCreateResponse(BaseModel):
+    id: int
+
+class OrganizationCreateResponse(BaseModel):
+    id: int
+
+class GradeCreateResponse(BaseModel):
+    id: int
+
+class DifficultyCreateResponse(BaseModel):
+    id: int
 
 class OrganizationResponse(BaseModel):
     id: int
