@@ -262,7 +262,7 @@ async def test_subject_courses_relation(client: AsyncClient, session: SQLModelAs
 
 
 @pytest.mark.asyncio
-async def test_create_difficulty(client: AsyncClient):
+async def test_create_difficulty(client: AsyncClient, session: SQLModelAsyncSession):
     difficulty_data = {
         'type': 'NewDifficulty',
         'label': 'Новая сложность',
@@ -274,10 +274,15 @@ async def test_create_difficulty(client: AsyncClient):
     data = response.json()
     assert 'id' in data
     assert isinstance(data['id'], int)
+    difficulty = (await session.exec(select(Difficulty).where(Difficulty.id == data['id']))).first()
+    assert difficulty.type == 'NewDifficulty'
+    assert difficulty.label == 'Новая сложность'
+    assert difficulty.icon == 'new-difficulty-icon'
+    assert difficulty.color == '#000000'
 
 
 @pytest.mark.asyncio
-async def test_create_organization(client: AsyncClient):
+async def test_create_organization(client: AsyncClient, session: SQLModelAsyncSession):
     organization_data = {
         'name': 'New Organization',
     }
@@ -286,10 +291,12 @@ async def test_create_organization(client: AsyncClient):
     data = response.json()
     assert 'id' in data
     assert isinstance(data['id'], int)
+    org = (await session.exec(select(Organization).where(Organization.id == data['id']))).first()
+    assert org.name == 'New Organization'
 
 
 @pytest.mark.asyncio
-async def test_create_grade(client: AsyncClient):
+async def test_create_grade(client: AsyncClient, session: SQLModelAsyncSession):
     grade_data = {
         'grade': 10,
     }
@@ -298,6 +305,8 @@ async def test_create_grade(client: AsyncClient):
     data = response.json()
     assert 'id' in data
     assert isinstance(data['id'], int)
+    grade = (await session.exec(select(Grade).where(Grade.id == data['id']))).first()
+    assert grade.grade == 10
 
 
 @pytest.mark.asyncio
@@ -309,8 +318,8 @@ async def test_create_course(client: AsyncClient):
         'end_date': '2024-06-01',
         'url': 'https://example.com',
         'image_url': 'https://example.com/image.jpg',
-        'organization': 'Some Organization',
-        'difficulty': 'Some Difficulty',
+        'organization': 'Coding Academy',
+        'difficulty': 'beginner',
         'subjects': [],
         'grades': [],
     }
@@ -322,7 +331,64 @@ async def test_create_course(client: AsyncClient):
 
 
 @pytest.mark.asyncio
-async def test_create_subject(client: AsyncClient):
+async def test_create_course_fail_grades(client: AsyncClient):
+    course_data = {
+        'title': 'New Course',
+        'description': 'New Course Description',
+        'start_date': '2024-01-01',
+        'end_date': '2024-06-01',
+        'url': 'https://example.com',
+        'image_url': 'https://example.com/image.jpg',
+        'organization': 'Coding Academy',
+        'difficulty': 'beginner',
+        'subjects': [],
+        'grades': [6, 7, 8],
+    }
+    response = await client.post('/courses/', json=course_data)
+    assert response.status_code == 400
+    assert response.json()['detail'] == 'One or more grades not found'
+
+
+@pytest.mark.asyncio
+async def test_create_course_fail_subjects(client: AsyncClient):
+    course_data = {
+        'title': 'New Course',
+        'description': 'New Course Description',
+        'start_date': '2024-01-01',
+        'end_date': '2024-06-01',
+        'url': 'https://example.com',
+        'image_url': 'https://example.com/image.jpg',
+        'organization': 'Coding Academy',
+        'difficulty': 'beginner',
+        'subjects': ['programming', 'nonexistent'],
+        'grades': [],
+    }
+    response = await client.post('/courses/', json=course_data)
+    assert response.status_code == 400
+    assert response.json()['detail'] == 'One or more subjects not found'
+
+
+@pytest.mark.asyncio
+async def test_create_course_fail_subjects_mixed(client: AsyncClient):
+    course_data = {
+        'title': 'New Course',
+        'description': 'New Course Description',
+        'start_date': '2024-01-01',
+        'end_date': '2024-06-01',
+        'url': 'https://example.com',
+        'image_url': 'https://example.com/image.jpg',
+        'organization': 'Coding Academy',
+        'difficulty': 'beginner',
+        'subjects': ['nonexistent'],
+        'grades': [],
+    }
+    response = await client.post('/courses/', json=course_data)
+    assert response.status_code == 400
+    assert response.json()['detail'] == 'One or more subjects not found'
+
+
+@pytest.mark.asyncio
+async def test_create_subject(client: AsyncClient, session: SQLModelAsyncSession):
     subject_data = {
         'type': 'NewSubject',
         'label': 'Новый предмет',
@@ -335,3 +401,9 @@ async def test_create_subject(client: AsyncClient):
     data = response.json()
     assert 'id' in data
     assert isinstance(data['id'], int)
+    subject = (await session.exec(select(Subject).where(Subject.id == data['id']))).first()
+    assert subject.type == 'NewSubject'
+    assert subject.label == 'Новый предмет'
+    assert subject.icon == 'new-icon'
+    assert subject.color == '#ffffff'
+    assert subject.additional_description == ['Описание 1', 'Описание 2']
