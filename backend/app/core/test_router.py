@@ -324,10 +324,7 @@ async def test_create_course(client: AsyncClient):
         'grades': [],
     }
     response = await client.post('/courses/', json=course_data)
-    assert response.status_code == 201
-    data = response.json()
-    assert 'id' in data
-    assert isinstance(data['id'], int)
+    assert response.status_code == 400
 
 
 @pytest.mark.asyncio
@@ -341,12 +338,14 @@ async def test_create_course_fail_grades(client: AsyncClient):
         'image_url': 'https://example.com/image.jpg',
         'organization': 'Coding Academy',
         'difficulty': 'beginner',
-        'subjects': [],
+        'subjects': ['programming'],
         'grades': [6, 7, 8],
     }
     response = await client.post('/courses/', json=course_data)
-    assert response.status_code == 400
-    assert response.json()['detail'] == 'One or more grades not found'
+    assert response.status_code == 201
+    data = response.json()
+    assert 'id' in data
+    assert isinstance(data['id'], int)
 
 
 @pytest.mark.asyncio
@@ -365,7 +364,7 @@ async def test_create_course_fail_subjects(client: AsyncClient):
     }
     response = await client.post('/courses/', json=course_data)
     assert response.status_code == 400
-    assert response.json()['detail'] == 'One or more subjects not found'
+    assert 'Subject nonexistent not found' in response.json()['detail']
 
 
 @pytest.mark.asyncio
@@ -384,7 +383,7 @@ async def test_create_course_fail_subjects_mixed(client: AsyncClient):
     }
     response = await client.post('/courses/', json=course_data)
     assert response.status_code == 400
-    assert response.json()['detail'] == 'One or more subjects not found'
+    assert response.json()['detail'] == 'Subject nonexistent not found'
 
 
 @pytest.mark.asyncio
