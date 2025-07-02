@@ -328,6 +328,27 @@ async def test_create_course(client: AsyncClient):
 
 
 @pytest.mark.asyncio
+async def test_create_course_1(client: AsyncClient):
+    course_data = {
+        "title": "title",
+        "description": "description",
+        "start_date": "2024-01-01",
+        "end_date": "2025-01-01",
+        "url": "https://example.com",
+        "image_url": "someimage",
+        "grades": [6, 7, 8, 9],
+        "difficulty": "beginner",
+        "subjects": ["programming", "ai"],
+        "organization": "some org"
+    }
+    response = await client.post('/courses/', json=course_data)
+    assert response.status_code == 201
+    data = response.json()
+    assert 'id' in data
+    assert isinstance(data['id'], int)
+
+
+@pytest.mark.asyncio
 async def test_create_course_fail_grades(client: AsyncClient):
     course_data = {
         'title': 'New Course',

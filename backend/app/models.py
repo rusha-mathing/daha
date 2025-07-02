@@ -81,5 +81,5 @@ async def create_db_and_models():
 
 
 async def get_session() -> AsyncGenerator[AsyncSession, None]:
-    async with SQLModelAsyncSession(engine) as session:
+    async with SQLModelAsyncSession(bind=engine, expire_on_commit=False) as session:
         yield session
