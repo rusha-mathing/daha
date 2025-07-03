@@ -1,12 +1,12 @@
 import {type FC} from 'react';
 import {Box, Typography} from '@mui/material';
 import Course from './Course/Course';
+import { Flex, Grid } from '../../components/FlexGrid';
 
-const ResourcesList: FC = () => {
+const CoursesArea: FC = () => {
     return (
         <Box>
-            <Box sx={{
-                display: 'flex',
+            <Flex sx={{
                 justifyContent: 'space-between',
                 alignItems: 'center',
                 mb: {xs: 1.5, sm: 2, md: 3},
@@ -22,10 +22,9 @@ const ResourcesList: FC = () => {
                 >
                     Найдено возможностей: 1
                 </Typography>
-            </Box>
+            </Flex>
 
-            <Box sx={{
-                display: 'grid',
+            <Grid sx={{
                 gridTemplateColumns: '1fr',
                 gap: {xs: 2, sm: 3, md: 4},
                 width: '100%',
@@ -33,7 +32,7 @@ const ResourcesList: FC = () => {
             }}>
                 <Course/>
                 <Course/>
-            </Box>
+            </Grid>
             {/*<Box sx={{*/}
             {/*    py: {xs: 4, md: 6},*/}
             {/*    px: 2,*/}
@@ -54,4 +53,4 @@ const ResourcesList: FC = () => {
     );
 };
 
-export default ResourcesList;
+export default CoursesArea;

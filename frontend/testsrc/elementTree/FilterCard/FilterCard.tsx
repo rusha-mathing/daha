@@ -6,13 +6,14 @@ import Subjects from "./Subjects/Subjects";
 import Difficulties from "./Difficulties/Difficulties.tsx";
 import Grades from "./Grades/Grades.tsx";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
+import {Flex} from "../../components/FlexGrid.tsx";
 
 const FilterCard: FC = () => {
     const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down('md'));
     return (
         <Box sx={{p: {xs: 2, md: 3}}}>
             {isMobile && (
-                <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3}}>
+                <Flex sx={{justifyContent: 'space-between', alignItems: 'center', mb: 3}}>
                     <Typography variant="h6" sx={{fontWeight: 600}}>Фильтры</Typography>
                     <IconButton
                         sx={{
@@ -25,7 +26,7 @@ const FilterCard: FC = () => {
                     >
                         <CloseIcon/>
                     </IconButton>
-                </Box>
+                </Flex>
             )}
             <Box>
                 <Subjects/>
@@ -36,9 +37,8 @@ const FilterCard: FC = () => {
             <Box sx={{mt: 4, pb: 2}}>
                 <Grades/>
             </Box>
-            <Box sx={{
+            <Flex sx={{
                 mt: 4,
-                display: 'flex',
                 justifyContent: 'center',
                 borderTop: `1px solid blue`,
                 pt: 3
@@ -61,7 +61,7 @@ const FilterCard: FC = () => {
                 >
                     Сбросить фильтры
                 </Button>
-            </Box>
+            </Flex>
         </Box>
     );
 };
