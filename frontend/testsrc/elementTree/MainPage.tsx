@@ -2,13 +2,14 @@ import {
     Container,
     Paper,
     Box,
-    Drawer,
     IconButton, useMediaQuery, type Theme
 } from '@mui/material';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import type {FC} from 'react';
 import FilterCard from './FilterCard/FilterCard.tsx';
 import CoursesArea from "./CoursesArea/CoursesArea.tsx";
+import {Flex, Grid} from "../components/FlexGrid.tsx";
+import MobilePanel from "./MobilePanel/MobilePanel.tsx";
 
 const MainPage: FC = () => {
     const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down('md'));
@@ -18,14 +19,12 @@ const MainPage: FC = () => {
             mb: {xs: 3, sm: 4, md: 5, lg: 6},
             px: {xs: 1.5, sm: 2, md: 3, lg: 4}
         }}>
-            <Box sx={{
-                display: 'flex',
+            <Flex sx={{
                 flexDirection: 'column',
                 gap: {xs: 2, sm: 3, md: 4},
                 width: '100%'
             }}>
-                <Box sx={{
-                    display: 'grid',
+                <Grid sx={{
                     gridTemplateColumns: {xs: '1fr', md: '280px 1fr', lg: '320px 1fr'},
                     gap: {xs: 2, sm: 2.5, md: 3, lg: 4},
                     width: '100%',
@@ -48,7 +47,7 @@ const MainPage: FC = () => {
                             <FilterCard/>
                         </Paper>
                     ) : (
-                        <Box sx={{display: 'flex', justifyContent: 'flex-end', mb: 1}}>
+                        <Flex sx={{justifyContent: 'flex-end', mb: 1}}>
                             <IconButton
                                 color="primary"
                                 sx={{
@@ -59,7 +58,7 @@ const MainPage: FC = () => {
                             >
                                 <FilterAltIcon/>
                             </IconButton>
-                        </Box>
+                        </Flex>
                     )}
 
                     <Box
@@ -72,26 +71,11 @@ const MainPage: FC = () => {
                     >
                         <CoursesArea/>
                     </Box>
-                </Box>
-            </Box>
-            <Drawer
-                anchor="left"
-                open={isMobile}
-                slotProps={
-                    {
-                        paper: {
-                            sx: {
-                                width: {xs: '85%', sm: 350}, // Адаптивная ширина для разных экранов
-                                borderRadius: '0 16px 16px 0',
-                                boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
-                                maxWidth: '100vw'
-                            }
-                        }
-                    }
-                }
-            >
+                </Grid>
+            </Flex>
+            <MobilePanel>
                 <FilterCard/>
-            </Drawer>
+            </MobilePanel>
         </Container>
     );
 };

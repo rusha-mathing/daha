@@ -1,5 +1,7 @@
 import {type FC} from "react";
-import {Card, CardContent, Typography, Button, Box, Chip, Stack} from '@mui/material';
+import {Card, CardContent, Typography, Button, Box, Stack} from '@mui/material';
+import Label from "../../../components/Label";
+import {Flex} from "../../../components/FlexGrid.tsx";
 
 const Course: FC = () => {
     return (
@@ -69,37 +71,14 @@ const Course: FC = () => {
                 </Typography>
 
                 <Stack direction="row" spacing={0.75} flexWrap="wrap" useFlexGap sx={{mb: {xs: 1.5, sm: 2}}}>
-                    <Chip
-                        key={10}
-                        label='10 класс'
-                        size="medium"
-                        sx={{
-                            borderRadius: {xs: '4px', sm: '6px'},
-                            backgroundColor: '#f5f5f5',
-                            color: '#333',
-                            px: {xs: 1, sm: 1.5},
-                            py: {xs: 2, sm: 2.5},
-                            height: 'auto',
-                            mb: 1,
-                            fontWeight: 500,
-                            fontSize: {xs: '0.85rem', sm: '0.9rem'}
-                        }}
-                    />
-                    <Chip
-                        label='Уровень: средний'
-                        size="medium"
-                        sx={{
-                            borderRadius: {xs: '4px', sm: '6px'},
-                            backgroundColor: '#f0f7ff',
-                            color: '#0066cc',
-                            px: {xs: 1, sm: 1.5},
-                            py: {xs: 2, sm: 2.5},
-                            height: 'auto',
-                            mb: 1,
-                            fontWeight: 500,
-                            fontSize: {xs: '0.85rem', sm: '0.9rem'}
-                        }}
-                    />
+                    <Label key={10} label='10 класс' sx={{
+                        height: 'auto', py: {xs: 2, sm: 2.5},
+                        backgroundColor: '#f5f5f5', color: '#333'
+                    }}/>
+                    <Label label='Уровень: средний' sx={{
+                        height: 'auto', py: {xs: 2, sm: 2.5},
+                        backgroundColor: '#f0f7ff', color: '#0066cc'
+                    }}/>
                 </Stack>
 
                 <Box sx={{mb: {xs: 2, sm: 2.5, md: 3}}}>
@@ -119,29 +98,24 @@ const Course: FC = () => {
 
                 <Box sx={{mb: {xs: 1.5, sm: 2}}}>
                     <Stack direction="row" spacing={0.75} flexWrap="wrap" useFlexGap sx={{mb: 0.5}}>
-                        <Chip
+                        <Label
                             key="ai"
                             label="Искусственный интеллект"
-                            size="medium"
                             sx={{
                                 mb: 0.75,
-                                fontWeight: 500,
                                 fontSize: {xs: '0.85rem', sm: '0.9rem'},
-                                backgroundColor: `#3f51b510`,
-                                color: '#3f51b5',
+                                backgroundColor: `#3f51b510`, color: '#3f51b5',
                                 height: {xs: '28px', sm: '32px'},
-                                borderRadius: {xs: '4px', sm: '6px'},
                                 px: {xs: 0.5, sm: 1},
                                 '&:hover': {
                                     backgroundColor: `#3f51b520`,
-                                }
+                                },
                             }}
                         />
                     </Stack>
                 </Box>
             </CardContent>
-            <Box sx={{
-                display: 'flex',
+            <Flex sx={{
                 justifyContent: 'flex-start',
                 px: {xs: 2, sm: 2.5, md: 3},
                 pb: {xs: 2, sm: 2.5, md: 3},
@@ -171,7 +145,7 @@ const Course: FC = () => {
                 >
                     Ссылка на курс
                 </Button>
-            </Box>
+            </Flex>
         </Card>
     );
 };
