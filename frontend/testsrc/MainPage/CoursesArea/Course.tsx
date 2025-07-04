@@ -2,8 +2,15 @@ import {type FC} from "react";
 import {Card, CardContent, Typography, Button, Box, Stack, useTheme} from '@mui/material';
 import Label from "./Label.tsx";
 import {Flex} from "../../components/FlexGrid.tsx";
+import {type Course as CourseInterface} from "../../../src/data/types.ts";
+import DifficultyLabel from "./used/DifficultyLabel.tsx";
+import SubjectLabel from "./used/SubjectLabel.tsx";
 
-const Course: FC = () => {
+interface CourseProps {
+    course: CourseInterface
+}
+
+const Course: FC<CourseProps> = ({course}) => {
     const theme = useTheme()
     return (
         <Card sx={{
@@ -15,7 +22,7 @@ const Course: FC = () => {
             overflow: 'visible',
             backgroundColor: theme.palette.background.paper,
             boxShadow: 'none',
-            border: '1px solid' +  theme.palette.grey["200"],
+            border: '1px solid' + theme.palette.grey["200"],
             '&:hover': {
                 borderColor: theme.palette.primary.main,
                 boxShadow: '0 4px 12px rgba(0, 0, 0, 0.04)',
@@ -44,7 +51,7 @@ const Course: FC = () => {
                         mb: {xs: 0.3, sm: 0.5}
                     }}
                 >
-                    Основы машинного обучения и нейронных сетей
+                    {course.title}
                 </Typography>
                 <Typography
                     variant="h6"
@@ -54,7 +61,7 @@ const Course: FC = () => {
                         color: theme.palette.grey["700"]
                     }}
                 >
-                    Яндекс
+                    {course.organization}
                 </Typography>
                 <Typography
                     variant="h6"
@@ -65,22 +72,25 @@ const Course: FC = () => {
                         letterSpacing: '-0.01em'
                     }}
                 >
-                    15 сентября 2025 — 20 января 2026
+                    {course.start_date} — {course.end_date}
                 </Typography>
 
                 <Stack direction="row" spacing={0.75} flexWrap="wrap" useFlexGap sx={{mb: {xs: 1.5, sm: 2}}}>
-                    <Label label='10 класс' sx={{
-                        height: 'auto',
-                        py: {xs: 2, sm: 2.5},
-                        backgroundColor: theme.palette.grey["100"],
-                        color: theme.palette.grey['800']
-                    }}/>
-                    <Label label='Уровень: средний' sx={{
-                        height: 'auto',
-                        py: {xs: 2, sm: 2.5},
-                        backgroundColor: theme.palette.primary.main + "25",
-                        color: theme.palette.primary.main,
-                    }}/>
+                    {course.grades.map((grade) => {
+                        return (
+                            <Label
+                                key={"grade_" + grade}
+                                label={`${grade} класс`}
+                                sx={{
+                                    height: 'auto',
+                                    py: {xs: 2, sm: 2.5},
+                                    backgroundColor: theme.palette.grey["100"],
+                                    color: theme.palette.grey['800']
+                                }}
+                            />
+                        )
+                    })}
+                    <DifficultyLabel course={course}/>
                 </Stack>
 
                 <Box sx={{mb: {xs: 2, sm: 2.5, md: 3}}}>
@@ -92,25 +102,13 @@ const Course: FC = () => {
                             fontSize: {xs: '0.95rem', sm: '1rem'}
                         }}
                     >
-                        Ведут специалисты из Яндекса с реальными кейсами из индустрии. Слушатели осваивают практические
-                        навыки построения нейронных сетей и работы с большими данными. Курс включает работу с реальными
-                        проектами и актуальными инструментами искусственного интеллекта.
+                        {course.description}
                     </Typography>
                 </Box>
 
                 <Box sx={{mb: {xs: 1.5, sm: 2}}}>
                     <Stack direction="row" spacing={0.75} flexWrap="wrap" useFlexGap sx={{mb: 0.5}}>
-                        <Label
-                            label="Искусственный интеллект"
-                            sx={{
-                                mb: 0.75,
-                                fontSize: {xs: '0.85rem', sm: '0.9rem'},
-                                backgroundColor: theme.palette.primary.dark + "10",
-                                color: theme.palette.primary.dark,
-                                height: {xs: '28px', sm: '32px'},
-                                px: {xs: 0.5, sm: 1}
-                            }}
-                        />
+                        {course.subjects.map(subject => <SubjectLabel key={subject} subject={subject}/>)}
                     </Stack>
                 </Box>
             </CardContent>
@@ -122,7 +120,7 @@ const Course: FC = () => {
             }}>
                 <Button
                     variant="contained"
-                    href="https://example.com"
+                    href={course.url}
                     target="_blank"
                     rel="noopener"
                     sx={{

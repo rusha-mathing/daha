@@ -3,10 +3,11 @@ import {FormControl, FormLabel, Stack, useTheme} from "@mui/material";
 
 interface FilterProps {
     title: string,
+    direction?: "column" | "row" | "row-reverse" | "column-reverse"
     children?: ReactNode,
 }
 
-const Filter: FC<FilterProps> = ({title, children}) => {
+const Filter: FC<FilterProps> = ({title, direction = "column", children}) => {
     const theme = useTheme();
     return (
         <FormControl component="fieldset" variant="standard" sx={{width: '100%'}}>
@@ -25,11 +26,11 @@ const Filter: FC<FilterProps> = ({title, children}) => {
                 {title}
             </FormLabel>
             <Stack
-                direction="column"
+                direction={direction}
                 spacing={1.5}
                 sx={{
-                    flexWrap: 'wrap',
-                    justifyContent: 'flex-start'
+                    flexWrap: direction === 'row' ? 'nowrap' : 'wrap',
+                    justifyContent: direction === 'row' ? 'space-between' : 'flex-start'
                 }}
             >
                 {children}
