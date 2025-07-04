@@ -1,12 +1,10 @@
-import type {ReactNode, FC} from 'react';
+import type {FC} from 'react';
 import {Flex} from "./FlexGrid.tsx";
+import type {ChildrenProps} from "../../src/data/types.ts";
+import {useTheme} from "@mui/material";
 
-interface FilterItemProps {
-    children?: ReactNode;
-}
-
-const FilterItem: FC<FilterItemProps> = ({children}) => {
-
+const FilterItem: FC<ChildrenProps> = ({children}) => {
+    const theme = useTheme();
     return (
         <Flex
             sx={{
@@ -17,11 +15,10 @@ const FilterItem: FC<FilterItemProps> = ({children}) => {
                 cursor: 'pointer',
                 transition: 'all 0.2s ease',
                 flexShrink: 0,
-                backgroundColor: 'gray', // "#3f51b5"
-                color: "#1a202c", // "#fff"
-                border: "#f00",
+                backgroundColor: theme.palette.background.default,
+                color: theme.palette.text.primary,
+                border: "1px solid #f00",
                 '&:hover': {
-                    backgroundColor: "gray", // "#002984"
                     transform: 'translateY(-2px)',
                     boxShadow: '0 2px 6px rgba(0, 0, 0, 0.05)',
                 }

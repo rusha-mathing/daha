@@ -2,16 +2,18 @@ import {
     Container,
     Paper,
     Box,
-    IconButton, useMediaQuery, type Theme
+    IconButton, useMediaQuery, type Theme, useTheme
 } from '@mui/material';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
-import type {FC} from 'react';
+import {type FC, useState} from 'react';
 import FilterCard from './FilterCard/FilterCard.tsx';
 import CoursesArea from "./CoursesArea/CoursesArea.tsx";
 import {Flex, Grid} from "../components/FlexGrid.tsx";
 import MobilePanel from "./MobilePanel/MobilePanel.tsx";
 
 const MainPage: FC = () => {
+    const theme = useTheme();
+    const [mobilePanelOpen, setMobilePanelOpen] = useState(false);
     const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down('md'));
     return (
         <Container maxWidth="xl" sx={{
@@ -37,19 +39,20 @@ const MainPage: FC = () => {
                                 p: 0,
                                 height: 'fit-content',
                                 borderRadius: {xs: 2, sm: 3},
-                                border: `1px solid lightblue`,
+                                border: '1px solid' + theme.palette.grey["200"],
                                 overflow: 'hidden',
                                 position: 'sticky',
                                 top: '20px',
                                 alignSelf: 'start'
                             }}
                         >
-                            <FilterCard/>
+                            <FilterCard onMobileCloseIconClick={() => setMobilePanelOpen(false)}/>
                         </Paper>
                     ) : (
                         <Flex sx={{justifyContent: 'flex-end', mb: 1}}>
                             <IconButton
                                 color="primary"
+                                onClick={() => setMobilePanelOpen(true)}
                                 sx={{
                                     border: `1px solid blue`,
                                     borderRadius: 2,
@@ -73,8 +76,11 @@ const MainPage: FC = () => {
                     </Box>
                 </Grid>
             </Flex>
-            <MobilePanel>
-                <FilterCard/>
+            <MobilePanel
+                open={isMobile && mobilePanelOpen}
+                onClose={() => setMobilePanelOpen(false)}
+            >
+                <FilterCard onMobileCloseIconClick={() => setMobilePanelOpen(false)}/>
             </MobilePanel>
         </Container>
     );

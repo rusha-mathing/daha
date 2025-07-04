@@ -1,9 +1,10 @@
 import {type FC} from "react";
-import {Card, CardContent, Typography, Button, Box, Stack} from '@mui/material';
+import {Card, CardContent, Typography, Button, Box, Stack, useTheme} from '@mui/material';
 import Label from "../../../components/Label";
 import {Flex} from "../../../components/FlexGrid.tsx";
 
 const Course: FC = () => {
+    const theme = useTheme()
     return (
         <Card sx={{
             height: '100%',
@@ -12,11 +13,11 @@ const Course: FC = () => {
             transition: 'all 0.3s ease',
             borderRadius: {xs: '6px', sm: '8px'},
             overflow: 'visible',
-            backgroundColor: 'white',
+            backgroundColor: theme.palette.background.paper,
             boxShadow: 'none',
-            border: '1px solid #e0e0e0',
+            border: '1px solid' +  theme.palette.grey["200"],
             '&:hover': {
-                borderColor: '#3f51b5',
+                borderColor: theme.palette.primary.main,
                 boxShadow: '0 4px 12px rgba(0, 0, 0, 0.04)',
             },
             position: 'relative',
@@ -34,25 +35,23 @@ const Course: FC = () => {
             }}>
                 <Typography
                     component="div"
-                    variant="h5"
+                    variant="h6"
                     sx={{
                         fontSize: {xs: '1.2rem', sm: '1.35rem', md: '1.5rem'},
-                        fontWeight: 700,
                         letterSpacing: '-0.01em',
                         lineHeight: 1.2,
-                        color: '#4361ee',
+                        color: theme.palette.primary.main,
                         mb: {xs: 0.3, sm: 0.5}
                     }}
                 >
                     Основы машинного обучения и нейронных сетей
                 </Typography>
                 <Typography
-                    variant="body1"
+                    variant="h6"
                     sx={{
-                        fontWeight: 600,
                         fontSize: {xs: '1rem', sm: '1.05rem', md: '1.1rem'},
                         mb: {xs: 0.5, sm: 1},
-                        color: '#616161'
+                        color: theme.palette.grey["700"]
                     }}
                 >
                     Яндекс
@@ -60,10 +59,9 @@ const Course: FC = () => {
                 <Typography
                     variant="h6"
                     sx={{
-                        fontWeight: 600,
                         fontSize: {xs: '1.2rem', sm: '1.25rem', md: '1.35rem'},
                         mb: {xs: 1.5, sm: 2},
-                        color: '#000',
+                        color: theme.palette.text.primary,
                         letterSpacing: '-0.01em'
                     }}
                 >
@@ -71,13 +69,17 @@ const Course: FC = () => {
                 </Typography>
 
                 <Stack direction="row" spacing={0.75} flexWrap="wrap" useFlexGap sx={{mb: {xs: 1.5, sm: 2}}}>
-                    <Label key={10} label='10 класс' sx={{
-                        height: 'auto', py: {xs: 2, sm: 2.5},
-                        backgroundColor: '#f5f5f5', color: '#333'
+                    <Label label='10 класс' sx={{
+                        height: 'auto',
+                        py: {xs: 2, sm: 2.5},
+                        backgroundColor: theme.palette.grey["100"],
+                        color: theme.palette.grey['800']
                     }}/>
                     <Label label='Уровень: средний' sx={{
-                        height: 'auto', py: {xs: 2, sm: 2.5},
-                        backgroundColor: '#f0f7ff', color: '#0066cc'
+                        height: 'auto',
+                        py: {xs: 2, sm: 2.5},
+                        backgroundColor: theme.palette.primary.main + "25",
+                        color: theme.palette.primary.main,
                     }}/>
                 </Stack>
 
@@ -86,7 +88,7 @@ const Course: FC = () => {
                         variant="body1"
                         sx={{
                             lineHeight: {xs: 1.5, sm: 1.6},
-                            color: '#333333',
+                            color: theme.palette.grey["800"],
                             fontSize: {xs: '0.95rem', sm: '1rem'}
                         }}
                     >
@@ -99,17 +101,14 @@ const Course: FC = () => {
                 <Box sx={{mb: {xs: 1.5, sm: 2}}}>
                     <Stack direction="row" spacing={0.75} flexWrap="wrap" useFlexGap sx={{mb: 0.5}}>
                         <Label
-                            key="ai"
                             label="Искусственный интеллект"
                             sx={{
                                 mb: 0.75,
                                 fontSize: {xs: '0.85rem', sm: '0.9rem'},
-                                backgroundColor: `#3f51b510`, color: '#3f51b5',
+                                backgroundColor: theme.palette.primary.dark + "10",
+                                color: theme.palette.primary.dark,
                                 height: {xs: '28px', sm: '32px'},
-                                px: {xs: 0.5, sm: 1},
-                                '&:hover': {
-                                    backgroundColor: `#3f51b520`,
-                                },
+                                px: {xs: 0.5, sm: 1}
                             }}
                         />
                     </Stack>
@@ -127,20 +126,9 @@ const Course: FC = () => {
                     target="_blank"
                     rel="noopener"
                     sx={{
-                        borderRadius: '4px',
                         px: {xs: 3, sm: 3.5, md: 4},
                         py: {xs: 0.75, sm: 1},
-                        fontWeight: 600,
-                        letterSpacing: '0.01em',
                         fontSize: {xs: '0.9rem', sm: '0.95rem'},
-                        boxShadow: 'none',
-                        backgroundColor: '#000',
-                        color: '#fff',
-                        textTransform: 'none',
-                        '&:hover': {
-                            backgroundColor: '#333',
-                            boxShadow: 'none'
-                        }
                     }}
                 >
                     Ссылка на курс

@@ -1,5 +1,5 @@
 import type {ReactNode, FC} from 'react';
-import {FormControl, FormLabel, Stack} from "@mui/material";
+import {FormControl, FormLabel, Stack, useTheme} from "@mui/material";
 
 interface FilterProps {
     title: string,
@@ -7,17 +7,18 @@ interface FilterProps {
 }
 
 const Filter: FC<FilterProps> = ({title, children}) => {
+    const theme = useTheme();
     return (
         <FormControl component="fieldset" variant="standard" sx={{width: '100%'}}>
             <FormLabel
                 component="legend"
                 sx={{
-                    fontWeight: 600,
-                    fontSize: '1rem',
-                    color: "#1a202c",
+                    fontWeight: theme.typography.subtitle1.fontWeight,
+                    fontSize: theme.typography.subtitle1.fontSize,
+                    color: theme.palette.text.primary,
                     mb: 1.5,
                     '&.Mui-focused': {
-                        color: "#1a202c"
+                        color: theme.palette.text.primary
                     }
                 }}
             >

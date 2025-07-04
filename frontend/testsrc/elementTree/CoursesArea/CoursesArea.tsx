@@ -1,9 +1,10 @@
 import {type FC} from 'react';
-import {Box, Typography} from '@mui/material';
+import {Box, Typography, useTheme} from '@mui/material';
 import Course from './Course/Course';
 import { Flex, Grid } from '../../components/FlexGrid';
 
 const CoursesArea: FC = () => {
+    const theme = useTheme();
     return (
         <Box>
             <Flex sx={{
@@ -15,10 +16,6 @@ const CoursesArea: FC = () => {
                 <Typography
                     variant="h6"
                     component="div"
-                    sx={{
-                        fontSize: {xs: '1rem', sm: '1.1rem', md: '1.25rem'},
-                        fontWeight: 600
-                    }}
                 >
                     Найдено возможностей: 1
                 </Typography>
@@ -33,22 +30,22 @@ const CoursesArea: FC = () => {
                 <Course/>
                 <Course/>
             </Grid>
-            {/*<Box sx={{*/}
-            {/*    py: {xs: 4, md: 6},*/}
-            {/*    px: 2,*/}
-            {/*    border: '1px dashed #ddd',*/}
-            {/*    borderRadius: '8px',*/}
-            {/*    backgroundColor: '#fafafa'*/}
-            {/*}}>*/}
-            {/*    <Typography*/}
-            {/*        variant="body1"*/}
-            {/*        color="text.secondary"*/}
-            {/*        align="center"*/}
-            {/*        sx={{fontSize: {xs: '0.95rem', sm: '1rem'}}}*/}
-            {/*    >*/}
-            {/*        По вашему запросу не найдено возможностей. Попробуйте изменить параметры фильтрации.*/}
-            {/*    </Typography>*/}
-            {/*</Box>*/}
+            <Box sx={{
+                py: {xs: 4, md: 6},
+                px: 2,
+                border: '1px dashed '+ theme.palette.grey["300"],
+                borderRadius: '8px',
+                backgroundColor: theme.palette.grey['300'] + "20"
+            }}>
+                <Typography
+                    variant="body1"
+                    color="text.secondary"
+                    align="center"
+                    sx={{fontSize: {xs: '0.95rem', sm: '1rem'}}}
+                >
+                    По вашему запросу не найдено возможностей. Попробуйте изменить параметры фильтрации.
+                </Typography>
+            </Box>
         </Box>
     );
 };

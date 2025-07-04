@@ -1,18 +1,24 @@
 import {type FC} from 'react';
 import type {ChildrenProps} from '../../../src/data/types';
-import {Drawer, type Theme, useMediaQuery} from "@mui/material";
+import {Drawer} from "@mui/material";
+import {type ModalProps} from "@mui/material/Modal";
 
-const MobilePanel: FC<ChildrenProps> = ({children}) => {
-    const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down('md'));
+interface MobilePanelProps extends ChildrenProps {
+    open?: boolean;
+    onClose?: ModalProps['onClose'];
+}
+
+const MobilePanel: FC<MobilePanelProps> = ({open, onClose, children}) => {
     return (
         <Drawer
             anchor="left"
-            open={isMobile} // TODO
+            open={open}
+            onClose={onClose}
             slotProps={
                 {
                     paper: {
                         sx: {
-                            width: {xs: '85%', sm: 350}, // Адаптивная ширина для разных экранов
+                            width: {xs: '85%', sm: 350},
                             borderRadius: '0 16px 16px 0',
                             boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
                             maxWidth: '100vw'

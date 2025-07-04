@@ -1,24 +1,26 @@
 import {type FC} from 'react';
-import {Typography} from "@mui/material";
+import {Typography, useTheme} from "@mui/material";
 import Round from '../../../../components/Round.tsx';
 
 const Grade: FC = () => {
+    const theme = useTheme();
     return (
         <Round sx={{
             cursor: 'pointer',
             transition: 'all 0.2s ease',
             flexShrink: 0,
+            backgroundColor: theme.palette.background.default,
+            color: theme.palette.text.primary,
+            border: "1px solid #f00",
             '&:hover': {
-                backgroundColor: "gray", // "#002984"
                 transform: 'translateY(-2px)',
                 boxShadow: '0 2px 6px rgba(0, 0, 0, 0.05)',
             }
         }}>
             <Typography
+                variant="subtitle1"
                 sx={{
-                    fontWeight: 600,
-                    fontSize: '0.95rem',
-                    color: "#1a202c",
+                    color: theme.palette.grey["900"],
                     textAlign: 'center',
                 }}
             >

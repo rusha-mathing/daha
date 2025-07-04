@@ -1,17 +1,17 @@
 import {type FC} from "react";
 import Filter from "../../../components/Filter.tsx";
-import Subject from "./Subject/Subject.tsx";
+import Difficulty from "../Difficulties/Difficulty/Difficulty.tsx"
 
 const Subjects: FC = () => {
     return (
-        <Filter title="Уровень сложности:">
-            <Subject/>
-            <Subject/>
-            <Subject/>
-            <Subject/>
-            <Subject/>
-            <Subject/>
-            <Subject/>
+        <Filter title="Направления">
+            <Difficulty/>
+            <Difficulty/>
+            <Difficulty/>
+            <Difficulty/>
+            <Difficulty/>
+            <Difficulty/>
+            <Difficulty/>
         </Filter>
     );
 };
