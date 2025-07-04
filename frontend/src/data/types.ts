@@ -2,11 +2,21 @@ import type {ReactNode} from "react";
 import type {GridProps} from "@mui/material/Grid";
 import type {SxProps} from "@mui/material";
 
-export interface Difficulty {
+export interface Typeable {
     type: string;
+}
+
+export interface Filter extends Typeable {
     label: string;
     icon: string;
     color: string;
+}
+
+export type Difficulty = Filter
+
+
+export interface Subject extends Filter {
+    additional_description: string[];
 }
 
 export interface Grade {
@@ -14,14 +24,6 @@ export interface Grade {
     grade: string
 }
 
-
-export interface Subject {
-    type: string;
-    label: string;
-    icon: string;
-    color: string;
-    additional_description: string[];
-}
 
 export interface Course {
     id: string;
@@ -32,9 +34,9 @@ export interface Course {
     start_date: string;
     end_date: string;
     url: string;
-    image_url?: string;
-    organization?: string;
-    difficulty?: string;
+    image_url: string;
+    organization: string;
+    difficulty: string;
 }
 
 export interface ChildrenProps {

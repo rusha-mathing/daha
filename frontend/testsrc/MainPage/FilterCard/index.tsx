@@ -4,9 +4,9 @@ import {Button} from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import {Flex} from "../../components/FlexGrid.tsx";
-import Filter from "./Filter.tsx";
-import FilterUnit from "./FilterUnit.tsx";
-import Grade from "./Grade.tsx";
+import Difficulties from "./used/Difficulties.tsx";
+import Subjects from "./used/Subjects.tsx";
+import Grades from "./used/Grades.tsx";
 
 interface FilterCardProps {
     onMobileCloseIconClick: () => void;
@@ -35,22 +35,13 @@ const FilterCard: FC<FilterCardProps> = ({onMobileCloseIconClick}) => {
                 </Flex>
             )}
             <Box>
-                <Filter title="Направления">
-                    <FilterUnit/>
-                    <FilterUnit/>
-                </Filter>
+                <Subjects/>
             </Box>
             <Box sx={{mt: 4}}>
-                <Filter title="Уровень сложности">
-                    <FilterUnit/>
-                    <FilterUnit/>
-                    <FilterUnit/>
-                </Filter>
+                <Difficulties/>
             </Box>
             <Box sx={{mt: 4, pb: 2}}>
-                <Filter title="Классы">
-                    <Grade/>
-                </Filter>
+                <Grades/>
             </Box>
             <Flex sx={{
                 mt: 4,
