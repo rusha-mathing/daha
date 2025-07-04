@@ -1,5 +1,5 @@
 import type {FC} from "react";
-import {SvgIcon, Typography} from "@mui/material";
+import {Box, Typography} from "@mui/material";
 import DynamicSvg from "../../../../components/DynamicSvg.tsx";
 import Round from "../../../../components/Round.tsx";
 import FilterItem from "../../../../components/FilterItem.tsx";
@@ -13,33 +13,29 @@ const svg = `<svg xmlns='http://www.w3.org/2000/svg'
 `
 const Difficulty: FC = () => {
     return (
-        <FilterItem key="beginner">
+        <FilterItem>
             <Round>
-                <SvgIcon fontSize="small">
-                    <DynamicSvg svg={svg}/>
-                </SvgIcon>
+                <DynamicSvg fontSize="small" svg={svg}/>
             </Round>
 
             <Typography
+                variant='body2'
                 sx={{
-                    fontWeight: 500,
-                    fontSize: '0.95rem',
-                    color: "#1a202c",
                     flex: 1,
                     textAlign: 'left'
                 }}
             >
-                Начальный
+                Искусственный интеллект
             </Typography>
-            {/*<Box*/}
-            {/*    sx={{*/}
-            {/*        width: 12,*/}
-            {/*        height: 12,*/}
-            {/*        borderRadius: '50%',*/}
-            {/*        backgroundColor: "red",*/}
-            {/*        ml: 1*/}
-            {/*    }}*/}
-            {/*/>*/}
+            <Box
+                sx={{
+                    width: 12,
+                    height: 12,
+                    borderRadius: '50%',
+                    backgroundColor: "red",
+                    ml: 1
+                }}
+            />
         </FilterItem>
     );
 }

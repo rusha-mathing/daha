@@ -2,14 +2,14 @@ import {type FC} from "react";
 import {Box, CssBaseline, ThemeProvider} from "@mui/material";
 import theme from "../src/theme/theme.ts";
 import MainPage from "./elementTree/MainPage.tsx";
+import {Flex} from "./components/FlexGrid.tsx";
 
 const App: FC = () => {
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline/>
-            <Box
+            <Flex
                 sx={{
-                    display: 'flex',
                     flexDirection: 'column',
                     minHeight: '100vh',
                     width: '100%',
@@ -20,7 +20,7 @@ const App: FC = () => {
                 <Box sx={{flex: '1 0 auto', py: {xs: 2, sm: 3, md: 4}, width: '100%'}}>
                     <MainPage/>
                 </Box>
-            </Box>
+            </Flex>
         </ThemeProvider>
     )
 }

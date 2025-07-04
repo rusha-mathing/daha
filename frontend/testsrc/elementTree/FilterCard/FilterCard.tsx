@@ -1,5 +1,5 @@
 import {type FC} from "react";
-import {Box, IconButton, type Theme, Typography, useMediaQuery} from "@mui/material";
+import {Box, IconButton, type Theme, Typography, useMediaQuery, useTheme} from "@mui/material";
 import {Button} from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import Subjects from "./Subjects/Subjects";
@@ -8,7 +8,12 @@ import Grades from "./Grades/Grades.tsx";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import {Flex} from "../../components/FlexGrid.tsx";
 
-const FilterCard: FC = () => {
+interface FilterCardProps {
+    onMobileCloseIconClick: () => void;
+}
+
+const FilterCard: FC<FilterCardProps> = ({onMobileCloseIconClick}) => {
+    const theme = useTheme()
     const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down('md'));
     return (
         <Box sx={{p: {xs: 2, md: 3}}}>
@@ -16,11 +21,12 @@ const FilterCard: FC = () => {
                 <Flex sx={{justifyContent: 'space-between', alignItems: 'center', mb: 3}}>
                     <Typography variant="h6" sx={{fontWeight: 600}}>Фильтры</Typography>
                     <IconButton
+                        onClick={onMobileCloseIconClick}
                         sx={{
-                            color: "red",
+                            color: theme.palette.grey["600"],
                             '&:hover': {
-                                color: "black",
-                                backgroundColor: 'rgba(58, 123, 213, 0.04)'
+                                color: theme.palette.primary.main,
+                                backgroundColor: theme.palette.primary.main + '20'
                             }
                         }}
                     >
@@ -40,7 +46,7 @@ const FilterCard: FC = () => {
             <Flex sx={{
                 mt: 4,
                 justifyContent: 'center',
-                borderTop: `1px solid blue`,
+                borderTop: '1px solid' + theme.palette.grey["400"],
                 pt: 3
             }}>
                 <Button
@@ -51,11 +57,9 @@ const FilterCard: FC = () => {
                         borderRadius: '50px',
                         px: 2.5,
                         py: 0.75,
-                        fontWeight: 500,
-                        borderWidth: '1.5px',
                         '&:hover': {
                             borderWidth: '1.5px',
-                            backgroundColor: 'rgba(63, 81, 181, 0.04)'
+                            backgroundColor: theme.palette.grey["400"] + "10"
                         }
                     }}
                 >
