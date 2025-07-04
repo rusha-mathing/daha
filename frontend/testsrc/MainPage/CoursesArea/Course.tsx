@@ -1,7 +1,7 @@
 import {type FC} from "react";
 import {Card, CardContent, Typography, Button, Box, Stack, useTheme} from '@mui/material';
-import Label from "../../../components/Label";
-import {Flex} from "../../../components/FlexGrid.tsx";
+import Label from "./Label.tsx";
+import {Flex} from "../../components/FlexGrid.tsx";
 
 const Course: FC = () => {
     const theme = useTheme()

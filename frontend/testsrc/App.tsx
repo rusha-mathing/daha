@@ -1,7 +1,7 @@
 import {type FC} from "react";
 import {Box, CssBaseline, ThemeProvider} from "@mui/material";
 import theme from "../src/theme/theme.ts";
-import MainPage from "./elementTree/MainPage.tsx";
+import MainPage from "./MainPage";
 import {Flex} from "./components/FlexGrid.tsx";
 
 const App: FC = () => {

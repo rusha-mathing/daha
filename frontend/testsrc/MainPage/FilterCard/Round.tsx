@@ -1,6 +1,6 @@
 import {type FC} from 'react';
-import {Flex} from "./FlexGrid.tsx";
-import type {PassThroughProps} from "../../src/data/types.ts";
+import {Flex} from "../../components/FlexGrid.tsx";
+import type {PassThroughProps} from "../../../src/data/types.ts";
 import {useTheme} from "@mui/material";
 
 

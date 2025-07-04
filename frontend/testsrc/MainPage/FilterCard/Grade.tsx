@@ -1,6 +1,6 @@
 import {type FC} from 'react';
 import {Typography, useTheme} from "@mui/material";
-import Round from '../../../../components/Round.tsx';
+import Round from './Round.tsx';
 
 const Grade: FC = () => {
     const theme = useTheme();
