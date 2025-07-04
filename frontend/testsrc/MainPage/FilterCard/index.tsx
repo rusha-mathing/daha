@@ -2,11 +2,11 @@ import {type FC} from "react";
 import {Box, IconButton, type Theme, Typography, useMediaQuery, useTheme} from "@mui/material";
 import {Button} from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
-import Subjects from "./Subjects/Subjects";
-import Difficulties from "./Difficulties/Difficulties.tsx";
-import Grades from "./Grades/Grades.tsx";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import {Flex} from "../../components/FlexGrid.tsx";
+import Filter from "./Filter.tsx";
+import FilterUnit from "./FilterUnit.tsx";
+import Grade from "./Grade.tsx";
 
 interface FilterCardProps {
     onMobileCloseIconClick: () => void;
@@ -35,13 +35,22 @@ const FilterCard: FC<FilterCardProps> = ({onMobileCloseIconClick}) => {
                 </Flex>
             )}
             <Box>
-                <Subjects/>
+                <Filter title="Направления">
+                    <FilterUnit/>
+                    <FilterUnit/>
+                </Filter>
             </Box>
             <Box sx={{mt: 4}}>
-                <Difficulties/>
+                <Filter title="Уровень сложности">
+                    <FilterUnit/>
+                    <FilterUnit/>
+                    <FilterUnit/>
+                </Filter>
             </Box>
             <Box sx={{mt: 4, pb: 2}}>
-                <Grades/>
+                <Filter title="Классы">
+                    <Grade/>
+                </Filter>
             </Box>
             <Flex sx={{
                 mt: 4,

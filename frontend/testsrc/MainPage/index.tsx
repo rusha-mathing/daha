@@ -6,10 +6,10 @@ import {
 } from '@mui/material';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import {type FC, useState} from 'react';
-import FilterCard from './FilterCard/FilterCard.tsx';
-import CoursesArea from "./CoursesArea/CoursesArea.tsx";
+import FilterCard from './FilterCard';
+import CoursesArea from "./CoursesArea";
 import {Flex, Grid} from "../components/FlexGrid.tsx";
-import MobilePanel from "./MobilePanel/MobilePanel.tsx";
+import MobilePanel from "./MobilePanel";
 
 const MainPage: FC = () => {
     const theme = useTheme();

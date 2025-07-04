@@ -1,8 +1,8 @@
 import type {FC} from "react";
-import {Box, Typography} from "@mui/material";
-import DynamicSvg from "../../../../components/DynamicSvg.tsx";
-import Round from "../../../../components/Round.tsx";
-import FilterItem from "../../../../components/FilterItem.tsx";
+import {Box, Typography, useTheme} from "@mui/material";
+import DynamicSvg from "../../components/DynamicSvg.tsx";
+import Round from "./Round.tsx";
+import {Flex} from "../../components/FlexGrid.tsx";
 
 const svg = `<svg xmlns='http://www.w3.org/2000/svg'
      width='100%' height='100%' viewBox='0 0 24 24'>
@@ -11,9 +11,26 @@ const svg = `<svg xmlns='http://www.w3.org/2000/svg'
     </path>
 </svg>
 `
-const Difficulty: FC = () => {
+const FilterUnit: FC = () => {
+    const theme = useTheme();
     return (
-        <FilterItem>
+        <Flex
+            sx={{
+                alignItems: 'center',
+                justifyContent: 'flex-start',
+                padding: '8px 12px',
+                borderRadius: '12px',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                flexShrink: 0,
+                backgroundColor: theme.palette.background.default,
+                color: theme.palette.text.primary,
+                border: "1px solid #f00",
+                '&:hover': {
+                    transform: 'translateY(-2px)',
+                    boxShadow: '0 2px 6px rgba(0, 0, 0, 0.05)',
+                }
+            }}>
             <Round>
                 <DynamicSvg fontSize="small" svg={svg}/>
             </Round>
@@ -36,8 +53,8 @@ const Difficulty: FC = () => {
                     ml: 1
                 }}
             />
-        </FilterItem>
+        </Flex>
     );
 }
 
-export default Difficulty;
+export default FilterUnit;

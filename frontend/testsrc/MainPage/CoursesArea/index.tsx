@@ -1,6 +1,6 @@
 import {type FC} from 'react';
 import {Box, Typography, useTheme} from '@mui/material';
-import Course from './Course/Course';
+import Course from './Course';
 import { Flex, Grid } from '../../components/FlexGrid';
 
 const CoursesArea: FC = () => {
