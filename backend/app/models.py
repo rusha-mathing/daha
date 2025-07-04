@@ -1,5 +1,5 @@
 from datetime import date
-from typing import List, AsyncGenerator
+from typing import List, AsyncGenerator, Optional
 
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlmodel import Field, Relationship, SQLModel
@@ -45,6 +45,14 @@ class Difficulty(SQLModel, table=True):
     courses: List['Course'] = Relationship(back_populates='difficulty')
 
 
+class SubjectUpdate(SQLModel):
+    type: Optional[str] = None
+    label: Optional[str] = None
+    icon: Optional[str] = None
+    color: Optional[str] = None
+    additional_description: Optional[List[str]] = None
+
+
 class Organization(SQLModel, table=True):
     id: int = Field(primary_key=True, index=True)
     name: str = Field(unique=True)
@@ -83,3 +91,23 @@ async def create_db_and_models():
 async def get_session() -> AsyncGenerator[AsyncSession, None]:
     async with SQLModelAsyncSession(bind=engine, expire_on_commit=False) as session:
         yield session
+
+
+class DifficultyUpdate(SQLModel):
+    type: Optional[str] = None
+    label: Optional[str] = None
+    icon: Optional[str] = None
+    color: Optional[str] = None
+
+
+class CourseUpdate(SQLModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    start_date: Optional[date] = None
+    end_date: Optional[date] = None
+    url: Optional[str] = None
+    image_url: Optional[str] = None
+    organization: Optional[str] = None
+    difficulty: Optional[str] = None
+    subjects: Optional[List[str]] = None
+    grades: Optional[List[int]] = None
