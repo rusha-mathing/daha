@@ -1,6 +1,6 @@
 import {type FC} from "react";
 import {Box, CssBaseline, ThemeProvider} from "@mui/material";
-import theme from "./theme/theme.ts";
+import theme from "./theme";
 import MainPage from "./MainPage";
 import {Flex} from "./components/FlexGrid.tsx";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
