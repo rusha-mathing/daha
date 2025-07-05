@@ -2,7 +2,7 @@ import {type FC} from 'react';
 import {useDifficultyLookup} from "../../../hooks.ts";
 import Label from "../Label.tsx";
 import {useTheme, Skeleton} from "@mui/material";
-import {type Course as CourseInterface} from "../../../../src/data/types.ts";
+import {type Course as CourseInterface} from "../../../types/course.ts";
 
 interface DifficultyLabelProps {
     course: CourseInterface;

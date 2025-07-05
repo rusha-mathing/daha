@@ -2,7 +2,7 @@ import {type FC} from "react";
 import {Card, CardContent, Typography, Button, Box, Stack, useTheme} from '@mui/material';
 import Label from "./Label.tsx";
 import {Flex} from "../../components/FlexGrid.tsx";
-import {type Course as CourseInterface} from "../../../src/data/types.ts";
+import {type Course as CourseInterface} from "../../types/course.ts";
 import DifficultyLabel from "./used/DifficultyLabel.tsx";
 import SubjectLabel from "./used/SubjectLabel.tsx";
 

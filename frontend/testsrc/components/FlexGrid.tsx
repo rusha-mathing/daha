@@ -1,6 +1,6 @@
 import type {FC} from 'react';
 import Box from '@mui/material/Box';
-import type {PassThroughProps} from "../../src/data/types.ts";
+import type {PassThroughProps} from "../types";
 
 export const Flex: FC<PassThroughProps> = ({
                                                sx,

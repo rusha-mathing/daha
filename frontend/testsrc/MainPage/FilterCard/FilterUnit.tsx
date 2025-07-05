@@ -3,18 +3,25 @@ import {Box, Typography, useTheme} from "@mui/material";
 import DynamicSvg from "../../components/DynamicSvg.tsx";
 import Round from "./Round.tsx";
 import {Flex} from "../../components/FlexGrid.tsx";
-import {type Filter as FilterInterface} from "../../../src/data/types.ts";
+import {type Filter as FilterInterface} from "../../types/filters";
+
 
 interface FilterUnitProps {
+    clicked: boolean;
     unit: FilterInterface;
+    onClick?: (clicked: boolean) => void;
 }
 
-const FilterUnit: FC<FilterUnitProps> = ({unit}) => {
-    const [clicked, setClicked] = useState(false);
+const FilterUnit: FC<FilterUnitProps> = ({unit, onClick, clicked}) => {
+    const [stateClicked, setStateClicked] = useState(clicked);
+    if (clicked != stateClicked) setStateClicked(clicked)
     const theme = useTheme();
     return (
         <Flex
-            onClick={() => setClicked(!clicked)}
+            onClick={() => {
+                if (onClick) onClick(!stateClicked);
+                setStateClicked(!stateClicked)
+            }}
             sx={{
                 alignItems: 'center',
                 justifyContent: 'flex-start',
@@ -23,21 +30,21 @@ const FilterUnit: FC<FilterUnitProps> = ({unit}) => {
                 cursor: 'pointer',
                 transition: 'all 0.2s ease',
                 flexShrink: 0,
-                backgroundColor: clicked ? unit.color + "20" : theme.palette.background.default,
-                color: clicked ? unit.color : theme.palette.text.primary,
-                border: '1px solid ' + (clicked ? `${unit.color}50` : `${theme.palette.text.primary}20`),
+                backgroundColor: stateClicked ? unit.color + "20" : theme.palette.background.default,
+                color: stateClicked ? unit.color : theme.palette.text.primary,
+                border: '1px solid ' + (stateClicked ? `${unit.color}50` : `${theme.palette.text.primary}20`),
                 '&:hover': {
                     transform: 'translateY(-2px)',
                     boxShadow: '0 2px 6px rgba(0, 0, 0, 0.05)',
                 }
             }}>
             <Round sx={{
-                backgroundColor: clicked ? unit.color : theme.palette.grey["200"]
+                backgroundColor: stateClicked ? unit.color : theme.palette.grey["200"]
             }}>
                 <DynamicSvg
                     fontSize="small" svg={unit.icon}
                     sx={{
-                        color: clicked ? theme.palette.background.default : undefined
+                        color: stateClicked ? theme.palette.background.default : undefined
                     }}
                 />
             </Round>
@@ -51,7 +58,7 @@ const FilterUnit: FC<FilterUnitProps> = ({unit}) => {
             >
                 {unit.label.charAt(0).toUpperCase() + unit.label.slice(1)}
             </Typography>
-            {clicked && <Box
+            {stateClicked && <Box
                 sx={{
                     width: 12,
                     height: 12,

@@ -10,10 +10,17 @@ import FilterCard from './FilterCard';
 import CoursesArea from "./CoursesArea";
 import {Flex, Grid} from "../components/FlexGrid.tsx";
 import MobilePanel from "./MobilePanel";
+import type {SDGFilters} from "../types/filters";
+
 
 const MainPage: FC = () => {
     const theme = useTheme();
     const [mobilePanelOpen, setMobilePanelOpen] = useState(false);
+    const [filters, setFilters] = useState<SDGFilters>({
+        subjectTypes: [],
+        difficultyTypes: [],
+        grades: [],
+    });
     const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down('md'));
     return (
         <Container maxWidth="xl" sx={{
@@ -46,7 +53,9 @@ const MainPage: FC = () => {
                                 alignSelf: 'start'
                             }}
                         >
-                            <FilterCard onMobileCloseIconClick={() => setMobilePanelOpen(false)}/>
+                            <FilterCard filters={filters}
+                                        setFilters={setFilters}
+                                        onMobileCloseIconClick={() => setMobilePanelOpen(false)}/>
                         </Paper>
                     ) : (
                         <Flex sx={{justifyContent: 'flex-end', mb: 1}}>
@@ -72,7 +81,7 @@ const MainPage: FC = () => {
                             overflow: 'visible'
                         }}
                     >
-                        <CoursesArea/>
+                        <CoursesArea filters={filters}/>
                     </Box>
                 </Grid>
             </Flex>
@@ -80,7 +89,8 @@ const MainPage: FC = () => {
                 open={isMobile && mobilePanelOpen}
                 onClose={() => setMobilePanelOpen(false)}
             >
-                <FilterCard onMobileCloseIconClick={() => setMobilePanelOpen(false)}/>
+                <FilterCard filters={filters} setFilters={setFilters}
+                            onMobileCloseIconClick={() => setMobilePanelOpen(false)}/>
             </MobilePanel>
         </Container>
     );

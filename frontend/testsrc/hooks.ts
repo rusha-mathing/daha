@@ -1,8 +1,10 @@
-import type {Difficulty, Subject, Typeable} from "../src/data/types.ts";
-
 import {useQuery, type UseQueryResult} from "@tanstack/react-query";
 import {useMemo} from 'react';
-import type {Course, Grade} from "../src/data/types.ts";
+import type {SDGFilters, Typeable} from "./types/filters";
+import type { Subject } from "./types/filters/subject.ts";
+import type {Course} from "./types/course.ts";
+import type {Difficulty} from "./types/filters/difficulty.ts";
+import type {Grade} from "./types/filters/grade.ts";
 
 const baseUrl = import.meta.env.VITE_API_URL as string;
 
@@ -33,9 +35,33 @@ export function useSubjects() {
     return useEndpoint<Subject[]>("subjects");
 }
 
+export function filtersIsEmpty(filters: SDGFilters) {
+    return filters.subjectTypes.length === 0 &&
+        filters.grades.length === 0 &&
+        filters.difficultyTypes.length === 0
+}
 
-export function useCourses() {
-    return useEndpoint<Course[]>("courses");
+export function useCourses(filters: SDGFilters) {
+    const queryResult = useEndpoint<Course[]>('courses');
+    const {data, ...rest} = queryResult;
+    const filteredCourses = useMemo(() => {
+        if (!data) return undefined;
+        if (filtersIsEmpty(filters)) {
+            return data;
+        }
+        return data.filter((course) => {
+
+            const subjectTest = filters.subjectTypes.length != 0 && course.subjects.some((type) => filters.subjectTypes.includes(type))
+            const gradeTest = course.grades.some((grade) => filters.grades.includes(grade))
+            const difficultyTest = filters.difficultyTypes.includes(course.difficulty)
+            return subjectTest || gradeTest || difficultyTest;
+        });
+    }, [data, filters]);
+
+    return {
+        ...rest,
+        data: filteredCourses,
+    };
 }
 
 export function useDifficulties() {
