@@ -1,4 +1,4 @@
-import {type Dispatch, type FC, type SetStateAction, useState} from "react";
+import {type Dispatch, type FC, type SetStateAction} from "react";
 import {Box, IconButton, type Theme, Typography, useMediaQuery, useTheme} from "@mui/material";
 import {Button} from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
@@ -19,7 +19,6 @@ interface FilterCardProps {
 
 const FilterCard: FC<FilterCardProps> = ({onMobileCloseIconClick, filters, setFilters}) => {
     const subjectTypes = filters.subjectTypes;
-    const [render, setRender] = useState(true);
     const theme = useTheme()
     const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down('md'));
     return (
@@ -68,7 +67,10 @@ const FilterCard: FC<FilterCardProps> = ({onMobileCloseIconClick, filters, setFi
                             difficultyTypes: [],
                             grades: []
                         })
-                        if (render) setRender(true)
+                        window.scrollTo({
+                            top: 0,
+                            behavior: 'instant',
+                        });
                     }}
                     sx={{
                         borderRadius: '50px',
