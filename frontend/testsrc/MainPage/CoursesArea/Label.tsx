@@ -18,7 +18,7 @@ const Label: FC<LabelProps> = ({
             sx={{
                 mb: 1,
                 px: {xs: 1, sm: 1.5},
-                fontWeight: theme.typography.h6.fontWeight,
+                fontWeight: theme.typography.body2.fontWeight,
                 fontSize: theme.typography.subtitle2.fontSize,
                 ...sx
             }}

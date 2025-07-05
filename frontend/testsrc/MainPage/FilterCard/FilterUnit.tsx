@@ -30,21 +30,21 @@ const FilterUnit: FC<FilterUnitProps> = ({unit, onClick, clicked}) => {
                 cursor: 'pointer',
                 transition: 'all 0.2s ease',
                 flexShrink: 0,
-                backgroundColor: stateClicked ? unit.color + "20" : theme.palette.background.default,
+                backgroundColor: stateClicked ? unit.color + "20" : theme.palette.grey["100"] + "80",
                 color: stateClicked ? unit.color : theme.palette.text.primary,
-                border: '1px solid ' + (stateClicked ? `${unit.color}50` : `${theme.palette.text.primary}20`),
+                border: '1px solid ' + (stateClicked ? `${unit.color}50` : `${theme.palette.grey["300"]}`),
                 '&:hover': {
                     transform: 'translateY(-2px)',
                     boxShadow: '0 2px 6px rgba(0, 0, 0, 0.05)',
                 }
             }}>
             <Round sx={{
-                backgroundColor: stateClicked ? unit.color : theme.palette.grey["200"]
+                backgroundColor: stateClicked ? unit.color : theme.palette.grey["400"] + "50"
             }}>
                 <DynamicSvg
                     fontSize="small" svg={unit.icon}
                     sx={{
-                        color: stateClicked ? theme.palette.background.default : undefined
+                        color: stateClicked ? theme.palette.background.default : theme.palette.text.primary + "95"
                     }}
                 />
             </Round>

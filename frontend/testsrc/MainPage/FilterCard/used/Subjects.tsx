@@ -27,14 +27,12 @@ const Subjects: FC<SubjectFiltersProps> = ({subjectTypes, setFilters}) => {
                 return <FilterUnit
                     clicked={subjectTypes.includes(unit.type)}
                     onClick={(clicked) => {
+                        window.scrollTo({
+                            top: 0,
+                            behavior: 'instant',
+                        });
                         if (clicked) addSubject(unit.type)
-                        else {
-                            removeSubject(unit.type)
-                            window.scrollTo({
-                                top: 0,
-                                behavior: 'instant',
-                            });
-                        }
+                        else removeSubject(unit.type)
                     }} key={unit.type} unit={unit}/>
             })}
         </Filter>

@@ -26,14 +26,12 @@ const Grades: FC<GradeFiltersProps> = ({grades, setFilters}) => {
                 return <Grade
                     clicked={grades.includes(unit.grade)}
                     onClick={(clicked) => {
+                        window.scrollTo({
+                            top: 0,
+                            behavior: 'instant',
+                        });
                         if (clicked) addGrade(unit.grade)
-                        else {
-                            removeGrade(unit.grade)
-                            window.scrollTo({
-                                top: 0,
-                                behavior: 'instant',
-                            });
-                        }
+                        else removeGrade(unit.grade)
                     }}
                     key={"grade_" + unit.grade} grade={unit.grade}/>
             })}
