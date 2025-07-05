@@ -5,8 +5,8 @@ import { ruRU } from '@mui/material/locale';
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#3f51b5', // Индиго - современный синий оттенок
-      light: '#757de8',
+      main: '#4361ee', // Индиго - современный синий оттенок
+      light: '#0066cc',
       dark: '#002984',
       contrastText: '#ffffff',
     },
@@ -63,7 +63,7 @@ const theme = createTheme({
       fontWeight: 600,
     },
     subtitle1: {
-      fontWeight: 500,
+      fontWeight: 600,
     },
     subtitle2: {
       fontWeight: 500,
@@ -73,8 +73,10 @@ const theme = createTheme({
       lineHeight: 1.6,
     },
     body2: {
-      fontWeight: 400,
+      fontSize: 16,
+      fontWeight: 500,
       lineHeight: 1.5,
+      letterSpacing: '-0.027em',
     },
     button: {
       fontWeight: 500,
