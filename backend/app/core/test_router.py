@@ -385,7 +385,7 @@ async def test_create_course_fail_subjects(client: AsyncClient):
         'grades': [],
     }
     response = await client.post('/courses/', json=course_data)
-    assert response.status_code == 400
+    assert response.status_code == 404
     assert 'Subject nonexistent not found' in response.json()['detail']
 
 

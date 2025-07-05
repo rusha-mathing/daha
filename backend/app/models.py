@@ -9,7 +9,14 @@ from sqlalchemy import Column, JSON
 
 postgres_db_name = 'daha_db'
 db_url = f'postgresql+asyncpg://daha_user:SWP2025@localhost/{postgres_db_name}'
-engine = create_async_engine(db_url, echo=True)
+engine = create_async_engine(
+    db_url, 
+    echo=True,
+    pool_size=20,
+    max_overflow=30,
+    pool_pre_ping=True,
+    pool_recycle=3600
+)
 
 
 # one to many I suppose

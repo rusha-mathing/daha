@@ -1,8 +1,22 @@
 from datetime import date
-from typing import List
-
-from pydantic import BaseModel, ConfigDict, field_validator
+from typing import List, Optional, Generic, TypeVar
+from pydantic import BaseModel, ConfigDict, field_validator, Field
 from app.models import Grade, Difficulty, Subject, Organization
+
+T = TypeVar('T')
+
+
+class PaginationParams(BaseModel):
+    page: int = Field(default=1, ge=1, description="Page number")
+    size: int = Field(default=20, ge=1, le=100, description="Items per page")
+
+
+class PaginatedResponse(BaseModel, Generic[T]):
+    items: List[T]
+    total: int
+    page: int
+    size: int
+    pages: int
 
 
 class FilterResponse(BaseModel):
@@ -72,6 +86,16 @@ class CourseResponse(BaseModel):
     @classmethod
     def serialize_organization(cls, organization: Organization) -> str:
         return organization.name
+
+
+class CourseFilters(BaseModel):
+    subject: Optional[str] = None
+    difficulty: Optional[str] = None
+    organization: Optional[str] = None
+    grade: Optional[int] = None
+    start_date: Optional[date] = None
+    end_date: Optional[date] = None
+    search: Optional[str] = None
 
 
 class SubjectCreate(BaseModel):
