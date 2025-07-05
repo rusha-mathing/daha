@@ -1,0 +1,52 @@
+@startuml DahaPlatformDeployment
+
+title Daha Platform - Deployment View
+
+left to right direction
+
+node "VPS (Ubuntu Server)" #LightBlue {
+
+  component "systemd" as systemd #LightYellow
+  
+  component "Frontend (Vite)" as frontend #LightCyan
+  component "FastAPI Backend (Uvicorn)" as backend #LightCyan
+  database "PostgreSQL" as db #LightPink
+  component "Telegram Bot" as bot #LightCyan
+  
+  node "Reverse Proxy (Nginx)" #AliceBlue {
+    [daha.pro] --> frontend
+    [api.daha.pro] --> backend
+    [bot.daha.pro] --> bot
+  }
+  
+  systemd --> frontend : manages
+  systemd --> backend : manages
+  systemd --> bot : manages
+
+}
+
+cloud "Telegram API" as telegram_api #LightGreen
+cloud "User Browser" as user #White
+
+user ..> [daha.pro]
+user ..> [api.daha.pro]
+
+frontend .right.> backend
+
+bot ..> backend
+backend ..> telegram_api : Validate Telegram Login
+bot ..> telegram_api : Polls for messages
+backend --> db : SQL
+
+legend right
+|= Color |= Meaning           |
+|<back:LightCyan>            </back>| Application       |
+|<back:LightPink>            </back>| Database Server   |
+|<back:LightBlue>            </back>| VPS Node          |
+|<back:AliceBlue>            </back>| Reverse Proxy     |
+|<back:LightGreen>            </back>| External API     |
+|<back:White>            </back>| Interface         |
+|<back:LightYellow>            </back>| Systemd     |
+endlegend
+
+@enduml
