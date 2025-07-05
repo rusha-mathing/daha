@@ -1,0 +1,50 @@
+@startuml CoursePlatformComponentDiagram
+
+title Daha Platform
+
+left to right direction
+
+component "React Frontend" as frontend
+
+component "FastAPI Backend" as backend {
+  [/login] as auth
+  [/preferences] as prefs
+  [/add /edit /delete] as admin_ep
+  [/courses] as courses
+}
+
+database "PostgreSQL" as db
+component "Telegram Bot" as telegram_bot
+component "Telegram" as telegram_servers
+
+interface "REST API" as rest_api
+interface "Bot Webhook" as webhook
+interface "SQL Interface" as sql_iface
+interface "Telegram API" as telegram_api
+
+rest_api -[hidden]-> webhook
+webhook -[hidden]-> sql_iface
+sql_iface -[hidden]-> telegram_api
+
+frontend -right-( rest_api
+
+rest_api --- auth
+rest_api --- prefs
+rest_api --- admin_ep
+rest_api --- courses
+
+admin_ep --( sql_iface : writes data
+courses --( sql_iface : reads data
+prefs --( sql_iface : writes preferences data
+prefs --( sql_iface : reads preferences data
+
+admin_ep --( webhook : sends course change notifications
+telegram_bot -left- webhook
+
+auth -right-( telegram_api : login requests
+telegram_bot -right-( telegram_api : polls for updates
+telegram_servers -left- telegram_api
+
+db -down- sql_iface
+
+@enduml
