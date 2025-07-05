@@ -1,7 +1,7 @@
 import {type FC} from 'react';
-import type {ChildrenProps} from '../../../src/data/types';
 import {Drawer} from "@mui/material";
 import {type ModalProps} from "@mui/material/Modal";
+import type {ChildrenProps} from "../../types";
 
 interface MobilePanelProps extends ChildrenProps {
     open?: boolean;
