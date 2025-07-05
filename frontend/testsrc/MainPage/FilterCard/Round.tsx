@@ -1,7 +1,7 @@
 import {type FC} from 'react';
 import {Flex} from "../../components/FlexGrid.tsx";
-import type {PassThroughProps} from "../../../src/data/types.ts";
 import {useTheme} from "@mui/material";
+import type {PassThroughProps} from "../../types";
 
 
 const Round: FC<PassThroughProps> = ({children, sx}) => {

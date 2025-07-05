@@ -3,11 +3,15 @@ import {Box, Typography, useTheme} from '@mui/material';
 import Course from './Course';
 import {Flex, Grid} from '../../components/FlexGrid';
 import {useCourses} from "../../hooks.ts";
+import type {SDGFilters} from '../../types/filters';
 
+interface CoursesAreaProps {
+    filters: SDGFilters;
+}
 
-const CoursesArea: FC = () => {
+const CoursesArea: FC<CoursesAreaProps> = ({filters}) => {
     const theme = useTheme();
-    const {data, isLoading, error} = useCourses();
+    const {data, isLoading, error} = useCourses(filters);
     if (isLoading) {
         return <h1>loading</h1>
     }

@@ -1,4 +1,4 @@
-import {type FC} from "react";
+import {type Dispatch, type FC, type SetStateAction, useState} from "react";
 import {Box, IconButton, type Theme, Typography, useMediaQuery, useTheme} from "@mui/material";
 import {Button} from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
@@ -7,12 +7,19 @@ import {Flex} from "../../components/FlexGrid.tsx";
 import Difficulties from "./used/Difficulties.tsx";
 import Subjects from "./used/Subjects.tsx";
 import Grades from "./used/Grades.tsx";
+import type {SDGFilters} from "../../types/filters";
+import {filtersIsEmpty} from "../../hooks.ts";
+
 
 interface FilterCardProps {
     onMobileCloseIconClick: () => void;
+    filters: SDGFilters;
+    setFilters: Dispatch<SetStateAction<SDGFilters>>;
 }
 
-const FilterCard: FC<FilterCardProps> = ({onMobileCloseIconClick}) => {
+const FilterCard: FC<FilterCardProps> = ({onMobileCloseIconClick, filters, setFilters}) => {
+    const subjectTypes = filters.subjectTypes;
+    const [render, setRender] = useState(true);
     const theme = useTheme()
     const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down('md'));
     return (
@@ -35,24 +42,34 @@ const FilterCard: FC<FilterCardProps> = ({onMobileCloseIconClick}) => {
                 </Flex>
             )}
             <Box>
-                <Subjects/>
+                <Subjects subjectTypes={subjectTypes} setFilters={setFilters}/>
             </Box>
             <Box sx={{mt: 4}}>
-                <Difficulties/>
+                <Difficulties difficultyTypes={filters.difficultyTypes} setFilters={setFilters}/>
             </Box>
             <Box sx={{mt: 4, pb: 2}}>
-                <Grades/>
+                <Grades grades={filters.grades} setFilters={setFilters}/>
             </Box>
-            <Flex sx={{
-                mt: 4,
-                justifyContent: 'center',
-                borderTop: '1px solid' + theme.palette.grey["400"],
-                pt: 3
-            }}>
+            {!filtersIsEmpty(filters) && <Flex
+
+                sx={{
+                    mt: 4,
+                    justifyContent: 'center',
+                    borderTop: '1px solid' + theme.palette.grey["400"],
+                    pt: 3
+                }}>
                 <Button
                     variant="outlined"
                     startIcon={<RestartAltIcon/>}
                     size="medium"
+                    onClick={() => {
+                        setFilters({
+                            subjectTypes: [],
+                            difficultyTypes: [],
+                            grades: []
+                        })
+                        if (render) setRender(true)
+                    }}
                     sx={{
                         borderRadius: '50px',
                         px: 2.5,
@@ -65,7 +82,7 @@ const FilterCard: FC<FilterCardProps> = ({onMobileCloseIconClick}) => {
                 >
                     Сбросить фильтры
                 </Button>
-            </Flex>
+            </Flex>}
         </Box>
     );
 };
