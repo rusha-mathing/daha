@@ -27,7 +27,13 @@ const Difficulties: FC<DifficultyFiltersProps> = ({difficultyTypes, setFilters})
                     clicked={difficultyTypes.includes(unit.type)}
                     onClick={(clicked) => {
                         if (clicked) addDifficulty(unit.type)
-                        else removeDifficulty(unit.type)
+                        else {
+                            removeDifficulty(unit.type)
+                            window.scrollTo({
+                                top: 0,
+                                behavior: 'instant',
+                            });
+                        }
                     }} key={unit.type} unit={unit}/>
             })}
         </Filter>
