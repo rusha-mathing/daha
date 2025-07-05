@@ -1,7 +1,7 @@
 import {type FC} from 'react';
 import {Box, Typography, useTheme} from '@mui/material';
-import Course from './Course';
-import {Flex, Grid} from '../../components/FlexGrid';
+import Course from './Course.tsx';
+import {Flex, Grid} from '../../components/FlexGrid.tsx';
 import {useCourses} from "../../hooks.ts";
 import type {SDGFilters} from '../../types/filters';
 

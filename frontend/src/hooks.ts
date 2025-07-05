@@ -1,7 +1,7 @@
 import {useQuery, type UseQueryResult} from "@tanstack/react-query";
 import {useMemo} from 'react';
 import type {SDGFilters, Typeable} from "./types/filters";
-import type { Subject } from "./types/filters/subject.ts";
+import type {Subject} from "./types/filters/subject.ts";
 import type {Course} from "./types/course.ts";
 import type {Difficulty} from "./types/filters/difficulty.ts";
 import type {Grade} from "./types/filters/grade.ts";
@@ -46,16 +46,25 @@ export function useCourses(filters: SDGFilters) {
     const {data, ...rest} = queryResult;
     const filteredCourses = useMemo(() => {
         if (!data) return undefined;
-        if (filtersIsEmpty(filters)) {
-            return data;
+        let result = [...data];
+        if (filters.subjectTypes.length > 0) {
+            result = result.filter(resource =>
+                resource.subjects.some((subject: string) => filters.subjectTypes.includes(subject))
+            );
         }
-        return data.filter((course) => {
 
-            const subjectTest = filters.subjectTypes.length != 0 && course.subjects.some((type) => filters.subjectTypes.includes(type))
-            const gradeTest = course.grades.some((grade) => filters.grades.includes(grade))
-            const difficultyTest = filters.difficultyTypes.includes(course.difficulty)
-            return subjectTest || gradeTest || difficultyTest;
-        });
+        if (filters.difficultyTypes.length > 0) {
+            result = result.filter(resource =>
+                resource.difficulty && filters.difficultyTypes.includes(resource.difficulty)
+            );
+        }
+
+        if (filters.grades.length > 0) {
+            result = result.filter(resource =>
+                resource.grades.some((grade: number) => filters.grades.includes(grade))
+            );
+        }
+        return result
     }, [data, filters]);
 
     return {
