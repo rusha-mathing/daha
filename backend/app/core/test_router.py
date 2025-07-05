@@ -337,7 +337,7 @@ async def test_create_course(client: AsyncClient):
     }
     response = await client.post('/courses/', json=course_data)
     assert response.status_code == 400
-    assert response.json()['detail'] == "Failed to create course: 400: Course must have at least one subject"
+    assert response.json()['detail'] == 'Failed to create course: 400: Course must have at least one subject'
 
 
 @pytest.mark.asyncio

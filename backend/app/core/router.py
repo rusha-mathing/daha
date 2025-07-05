@@ -1,20 +1,27 @@
 from typing import List
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import APIRouter, Depends, status
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel import select, func
 from sqlalchemy.orm import selectinload
 
 from app.core.models import (
-    SubjectResponse, DifficultyResponse, OrganizationResponse, GradeResponse, 
-    CourseResponse, CreateResponse, SubjectCreate, DifficultyCreate, 
-    OrganizationCreate, GradeCreate, CourseCreate, PaginationParams, 
-    PaginatedResponse, CourseFilters
+    SubjectResponse,
+    DifficultyResponse,
+    OrganizationResponse,
+    GradeResponse,
+    CourseResponse,
+    CreateResponse,
+    SubjectCreate,
+    DifficultyCreate,
+    OrganizationCreate,
+    GradeCreate,
+    CourseCreate,
+    PaginationParams,
+    PaginatedResponse,
+    CourseFilters,
 )
 from app.models import CourseUpdate
-from app.core.services import (
-    subject_service, difficulty_service, organization_service, 
-    grade_service, course_service
-)
+from app.core.services import subject_service, difficulty_service, organization_service, grade_service, course_service
 from app.core.exceptions import NotFoundError, DatabaseError, ValidationError
 from app.models import get_session, Course, Subject, Difficulty, Organization, Grade
 
@@ -41,7 +48,7 @@ async def create_subject(subject: SubjectCreate, session: AsyncSession = Depends
         db_subject = await subject_service.create(session, subject.model_dump())
         return CreateResponse(id=db_subject.id)
     except Exception as e:
-        raise ValidationError(f"Failed to create subject: {str(e)}")
+        raise ValidationError(f'Failed to create subject: {str(e)}')
 
 
 @router.put('/subjects/{id}', response_model=SubjectResponse)
@@ -76,7 +83,7 @@ async def create_difficulty(difficulty: DifficultyCreate, session: AsyncSession 
         db_difficulty = await difficulty_service.create(session, difficulty.model_dump())
         return CreateResponse(id=db_difficulty.id)
     except Exception as e:
-        raise ValidationError(f"Failed to create difficulty: {str(e)}")
+        raise ValidationError(f'Failed to create difficulty: {str(e)}')
 
 
 @router.put('/difficulties/{id}', response_model=DifficultyResponse)
@@ -111,7 +118,7 @@ async def create_organization(organization: OrganizationCreate, session: AsyncSe
         db_organization = await organization_service.create(session, organization.model_dump())
         return CreateResponse(id=db_organization.id)
     except Exception as e:
-        raise ValidationError(f"Failed to create organization: {str(e)}")
+        raise ValidationError(f'Failed to create organization: {str(e)}')
 
 
 @router.put('/organizations/{id}', response_model=OrganizationResponse)
@@ -146,7 +153,7 @@ async def create_grade(grade: GradeCreate, session: AsyncSession = Depends(get_s
         db_grade = await grade_service.create(session, grade.model_dump())
         return CreateResponse(id=db_grade.id)
     except Exception as e:
-        raise ValidationError(f"Failed to create grade: {str(e)}")
+        raise ValidationError(f'Failed to create grade: {str(e)}')
 
 
 @router.put('/grades/{id}', response_model=GradeResponse)
@@ -166,7 +173,7 @@ async def delete_grade(id: int, session: AsyncSession = Depends(get_session)):
 async def get_courses(
     pagination: PaginationParams = Depends(),
     filters: CourseFilters = Depends(),
-    session: AsyncSession = Depends(get_session)
+    session: AsyncSession = Depends(get_session),
 ):
     """Get courses with pagination and filtering"""
     try:
@@ -177,59 +184,50 @@ async def get_courses(
             selectinload(Course.organization),
             selectinload(Course.difficulty),
         )
-        
+
         # Apply filters
         if filters.subject:
             query = query.join(Course.subjects).where(Subject.type == filters.subject)
-        
+
         if filters.difficulty:
             query = query.join(Course.difficulty).where(Difficulty.type == filters.difficulty)
-        
+
         if filters.organization:
             query = query.join(Course.organization).where(Organization.name == filters.organization)
-        
+
         if filters.grade:
             query = query.join(Course.grades).where(Grade.grade == filters.grade)
-        
+
         if filters.start_date:
             query = query.where(Course.start_date >= filters.start_date)
-        
+
         if filters.end_date:
             query = query.where(Course.end_date <= filters.end_date)
-        
+
         if filters.search:
-            search_term = f"%{filters.search}%"
-            query = query.where(
-                (Course.title.ilike(search_term)) |
-                (Course.description.ilike(search_term))
-            )
-        
+            search_term = f'%{filters.search}%'
+            query = query.where((Course.title.ilike(search_term)) | (Course.description.ilike(search_term)))
+
         # Get total count
         count_query = select(func.count()).select_from(query.subquery())
         total_result = await session.exec(count_query)
         total = total_result.first()
-        
+
         # Apply pagination
         offset = (pagination.page - 1) * pagination.size
         query = query.offset(offset).limit(pagination.size)
-        
+
         # Execute query
         result = await session.exec(query)
         courses = result.all()
-        
+
         # Calculate pages
         pages = (total + pagination.size - 1) // pagination.size
-        
-        return PaginatedResponse(
-            items=courses,
-            total=total,
-            page=pagination.page,
-            size=pagination.size,
-            pages=pages
-        )
-        
+
+        return PaginatedResponse(items=courses, total=total, page=pagination.page, size=pagination.size, pages=pages)
+
     except Exception as e:
-        raise DatabaseError(f"Failed to fetch courses: {str(e)}")
+        raise DatabaseError(f'Failed to fetch courses: {str(e)}')
 
 
 @router.get('/courses/{id}', response_model=CourseResponse)
@@ -252,19 +250,19 @@ async def create_course(course: CourseCreate, session: AsyncSession = Depends(ge
             'url': course.url,
             'image_url': course.image_url,
         }
-        
+
         return await course_service.create_with_relations(
             session=session,
             course_data=course_data,
             difficulty_type=course.difficulty,
             organization_name=course.organization,
             subject_types=course.subjects,
-            grade_values=course.grades
+            grade_values=course.grades,
         )
     except NotFoundError:
         raise
     except Exception as e:
-        raise ValidationError(f"Failed to create course: {str(e)}")
+        raise ValidationError(f'Failed to create course: {str(e)}')
 
 
 @router.put('/courses/{id}', response_model=CourseResponse)
@@ -276,4 +274,4 @@ async def update_course(id: int, course_update: CourseUpdate, session: AsyncSess
 @router.delete('/courses/{id}', status_code=status.HTTP_204_NO_CONTENT)
 async def delete_course(id: int, session: AsyncSession = Depends(get_session)):
     """Delete a course"""
-    await course_service.delete(session, id) 
+    await course_service.delete(session, id)
