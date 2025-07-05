@@ -3,8 +3,8 @@ from sqlmodel import select, SQLModel
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.core.exceptions import NotFoundError, DatabaseError
-from app.models import Course, Subject, Difficulty, Organization, Grade
+from app.core.exceptions import NotFoundError, DatabaseError, ValidationError
+from app.models import Course, Subject, Difficulty, Organization, Grade, CourseUpdate
 
 T = TypeVar('T', bound=SQLModel)
 
@@ -200,6 +200,117 @@ class CourseService(BaseService[Course]):
         except Exception as e:
             await session.rollback()
             raise DatabaseError(f"Failed to create course: {str(e)}")
+
+    async def update_with_relations(
+        self, 
+        session: AsyncSession, 
+        id: int, 
+        course_update: CourseUpdate
+    ) -> Course:
+        """Update a course with all its relationships"""
+        try:
+            # Get course with relations
+            result = await session.exec(
+                select(Course)
+                .where(Course.id == id)
+                .options(
+                    selectinload(Course.subjects),
+                    selectinload(Course.grades),
+                    selectinload(Course.organization),
+                    selectinload(Course.difficulty),
+                )
+            )
+            db_course = result.first()
+            if not db_course:
+                raise NotFoundError('Course', id)
+            
+            # Update basic fields
+            if course_update.title is not None:
+                db_course.title = course_update.title
+            if course_update.description is not None:
+                db_course.description = course_update.description
+            if course_update.start_date is not None:
+                db_course.start_date = course_update.start_date
+            if course_update.end_date is not None:
+                db_course.end_date = course_update.end_date
+            if course_update.url is not None:
+                db_course.url = course_update.url
+            if course_update.image_url is not None:
+                db_course.image_url = course_update.image_url
+            
+            # Update difficulty
+            if course_update.difficulty is not None:
+                difficulty_result = await session.exec(
+                    select(Difficulty).where(Difficulty.type == course_update.difficulty)
+                )
+                db_difficulty = difficulty_result.first()
+                if not db_difficulty:
+                    raise ValidationError("Difficulty not found")
+                db_course.difficulty = db_difficulty
+            
+            # Update subjects
+            if course_update.subjects is not None:
+                if isinstance(course_update.subjects, str):
+                    subject_result = await session.exec(select(Subject).where(Subject.type == course_update.subjects))
+                    db_subject = subject_result.first()
+                    if not db_subject:
+                        raise ValidationError(f'Subject "{course_update.subjects}" not found')
+                    db_course.subjects = [db_subject]
+                elif isinstance(course_update.subjects, list):
+                    subject_result = await session.exec(select(Subject).where(Subject.type.in_(course_update.subjects)))
+                    db_subjects = subject_result.all()
+                    
+                    if len(db_subjects) != len(course_update.subjects):
+                        found_types = [s.type for s in db_subjects]
+                        missing_subjects = [s for s in course_update.subjects if s not in found_types]
+                        raise ValidationError(f'Subjects not found: {missing_subjects}')
+                    
+                    db_course.subjects = db_subjects
+                else:
+                    raise ValidationError('Invalid subjects format. Must be a string or a list of strings.')
+            
+            # Update organization
+            if course_update.organization is not None:
+                org_result = await session.exec(select(Organization).where(Organization.name == course_update.organization))
+                db_organization = org_result.first()
+                if not db_organization:
+                    db_organization = Organization(name=course_update.organization)
+                    session.add(db_organization)
+                    await session.commit()
+                    await session.refresh(db_organization)
+                db_course.organization = db_organization
+            
+            # Update grades
+            if course_update.grades is not None:
+                db_grades = []
+                for grade_value in course_update.grades:
+                    grade_result = await session.exec(select(Grade).where(Grade.grade == grade_value))
+                    db_grade = grade_result.first()
+                    if not db_grade:
+                        db_grade = Grade(grade=grade_value)
+                        session.add(db_grade)
+                        await session.commit()
+                        await session.refresh(db_grade)
+                    db_grades.append(db_grade)
+                
+                db_course.grades.clear()
+                db_course.grades.extend(db_grades)
+            
+            session.add(db_course)
+            await session.commit()
+            
+            # Return updated course with relations
+            return await self.get_by_id_with_relations(session, id)
+            
+        except (NotFoundError, DatabaseError):
+            await session.rollback()
+            raise
+        except ValidationError:
+            await session.rollback()
+            raise
+        except Exception as e:
+            await session.rollback()
+            raise DatabaseError(f"Failed to update course: {str(e)}")
 
 
 # Service instances

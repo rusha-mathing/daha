@@ -1,7 +1,7 @@
 import time
 import logging
 from typing import Callable
-from fastapi import Request, Response
+from fastapi import Request, Response, HTTPException
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.types import ASGIApp
 
@@ -50,6 +50,14 @@ class ErrorHandlingMiddleware(BaseHTTPMiddleware):
         try:
             response = await call_next(request)
             return response
+        except HTTPException as http_exc:
+            # Log the HTTPException (including ValidationError)
+            logger.error(f"HTTPException in {request.method} {request.url.path}: {http_exc.detail}")
+            return Response(
+                content=f'{{"detail": "{http_exc.detail}"}}',
+                status_code=http_exc.status_code,
+                media_type="application/json"
+            )
         except Exception as e:
             logger.error(f"Unhandled error in {request.method} {request.url.path}: {str(e)}")
             raise 
