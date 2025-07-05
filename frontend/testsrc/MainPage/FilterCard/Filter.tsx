@@ -18,9 +18,6 @@ const Filter: FC<FilterProps> = ({title, direction = "column", children}) => {
                     fontSize: theme.typography.subtitle1.fontSize,
                     color: theme.palette.text.primary,
                     mb: 1.5,
-                    '&.Mui-focused': {
-                        color: theme.palette.text.primary
-                    }
                 }}
             >
                 {title}

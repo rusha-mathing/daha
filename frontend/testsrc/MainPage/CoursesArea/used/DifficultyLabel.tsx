@@ -24,8 +24,8 @@ const DifficultyLabel: FC<DifficultyLabelProps> = ({course}) => {
             sx={{
                 height: 'auto',
                 py: {xs: 2, sm: 2.5},
-                backgroundColor: theme.palette.primary.main + "10",
-                color: theme.palette.primary.main,
+                backgroundColor: theme.palette.primary.light + "10",
+                color: theme.palette.primary.light,
             }}/>
     );
 };

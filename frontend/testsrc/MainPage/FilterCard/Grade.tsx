@@ -19,6 +19,8 @@ const Grade: FC<GradeProps> = ({grade, onClick, clicked}) => {
         }}>
             <Round
                 sx={{
+                    width: 34,
+                    height: 34,
                     cursor: 'pointer',
                     transition: 'all 0.2s ease',
                     flexShrink: 0,
