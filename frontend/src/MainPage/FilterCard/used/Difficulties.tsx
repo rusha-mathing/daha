@@ -25,12 +25,12 @@ const Difficulties: FC<DifficultyFiltersProps> = ({difficultyTypes, setFilters})
             {data!.map((unit) => {
                 return <FilterUnit
                     clicked={difficultyTypes.includes(unit.type)}
-                    onClick={(clicked) => {
+                    onClick={() => {
                         window.scrollTo({
                             top: 0,
                             behavior: 'instant',
                         });
-                        if (clicked) addDifficulty(unit.type)
+                        if (difficultyTypes.includes(unit.type)) addDifficulty(unit.type)
                         else removeDifficulty(unit.type)
                     }} key={unit.type} unit={unit}/>
             })}
