@@ -1,0 +1,57 @@
+@startuml DahaPlatformDynamicView
+
+title Daha Platform - Dynamic View
+
+actor User
+actor Admin
+
+participant "React Frontend" as frontend
+participant "FastAPI Backend" as backend
+participant "Telegram API" as telegram_api
+participant "PostgreSQL" as db
+participant "Telegram Bot" as bot
+participant "Bot Webhook" as webhook
+
+== User logs in ==
+User -> frontend : Open app
+frontend -> backend : POST /auth/telegram
+backend -> telegram_api : Validate Telegram Auth
+telegram_api --> backend : Auth response
+backend -> frontend : Auth success
+
+== User fetches courses ==
+frontend -> backend : GET /courses
+backend -> db : SELECT courses
+db --> backend : Courses data
+backend -> frontend : Course list
+
+== User updates preferences ==
+frontend -> backend : POST /preferences
+backend -> db : UPDATE preferences
+db --> backend : OK
+backend -> frontend : Preferences updated
+
+== Admin logs in ==
+Admin -> frontend : Open admin panel
+frontend -> backend : POST /auth/telegram
+backend -> telegram_api : Validate Telegram Auth
+telegram_api --> backend : Auth response
+backend -> frontend : Auth success
+
+== Admin modifies a course ==
+frontend -> backend : POST /admin/courses/edit
+backend -> db : UPDATE course
+db --> backend : OK
+backend -> webhook : Notify course change
+webhook -> bot : Trigger notification
+
+== Bot checks user preferences ==
+bot -> backend : GET /preferences?filter=match(course)
+backend -> db : SELECT preferences WHERE match
+db --> backend : Matching users
+backend --> bot : Matching preferences/users
+
+== Bot notifies users via Telegram ==
+bot -> telegram_api : sendMessage to matching users
+telegram_api -> User : Send actual notification message
+@enduml
