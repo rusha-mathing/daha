@@ -1,36 +1,33 @@
 import {type FC} from "react";
-import {Card, CardContent, Typography, Button, Box, Stack, useTheme} from '@mui/material';
+import {Box, Button, Card, CardContent, Stack, Typography, useTheme} from '@mui/material';
 import Label from "./Label.tsx";
 import {Flex} from "../../components/FlexGrid.tsx";
 import {type Course as CourseInterface} from "../../types/course.ts";
-import DifficultyLabel from "./used/DifficultyLabel.tsx";
-import SubjectLabel from "./used/SubjectLabel.tsx";
-import Description from "./used/Description.tsx";
+import UseDifficultyLabel from "./used/UseDifficultyLabel.tsx";
+import UseSubjectLabel from "./used/UseSubjectLabel.tsx";
+import UseDescription from "./used/UseDescription.tsx";
+import {capitalize, formatDate, getEnhancedDescription} from "./funcs.ts";
+import type {Subject} from "../../types/filters/subject.ts";
+import type {Difficulty} from "../../types/filters/difficulty.ts";
+
+interface Lookups {
+    subjectLookup?: Record<string, Subject>;
+    difficultyLookup?: Record<string, Difficulty>;
+}
 
 interface CourseProps {
-    course: CourseInterface
+    course: CourseInterface;
+    lookups?: Lookups;
 }
 
 
-const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const day = date.getDate();
-    const year = date.getFullYear();
-
-    const monthsGenitive = [
-        'января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
-        'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'
-    ];
-
-    const month = monthsGenitive[date.getMonth()];
-    return `${day} ${month} ${year}`;
-};
-
-const Course: FC<CourseProps> = ({course}) => {
+const Course: FC<CourseProps> = ({course, lookups}) => {
     const theme = useTheme()
+    const startDate = formatDate(course.start_date)
+    const endDate = formatDate(course.end_date)
     return (
         <Card sx={{
-            height: '100%',
+            // height: '100%',
             display: 'flex',
             flexDirection: 'column',
             transition: 'all 0.3s ease',
@@ -79,47 +76,88 @@ const Course: FC<CourseProps> = ({course}) => {
                 >
                     {course.organization}
                 </Typography>
-                <Typography
-                    variant="h6"
-                    sx={{
-                        fontSize: {xs: '1.2rem', sm: '1.25rem', md: '1.35rem'},
-                        mb: {xs: 1.5, sm: 2},
-                        color: theme.palette.text.primary,
-                        letterSpacing: '-0.01em'
-                    }}
-                >
-                    {formatDate(course.start_date)} — {formatDate(course.end_date)}
-                </Typography>
-
-                <Stack direction="row" spacing={0.75} flexWrap="wrap" useFlexGap sx={{mb: {xs: 1.5, sm: 2}}}>
-                    {course.grades.map((grade) => {
-                        return (
+                {(startDate && endDate) &&
+                    <Typography
+                        variant="h6"
+                        sx={{
+                            fontSize: {xs: '1.2rem', sm: '1.25rem', md: '1.35rem'},
+                            mb: {xs: 1.5, sm: 2},
+                            color: theme.palette.text.primary,
+                            letterSpacing: '-0.01em'
+                        }}
+                    >
+                        {formatDate(course.start_date)} — {formatDate(course.end_date)}
+                    </Typography>}
+                {course.grades &&
+                    <Stack direction="row" spacing={0.75} flexWrap="wrap" useFlexGap sx={{mb: {xs: 1.5, sm: 2}}}>
+                        {course.grades.map((grade) => {
+                            return (
+                                <Label
+                                    key={"grade_" + grade}
+                                    label={`${grade} класс`}
+                                    sx={{
+                                        height: 'auto',
+                                        py: {xs: 2, sm: 2.5},
+                                        backgroundColor: theme.palette.grey["100"],
+                                        color: theme.palette.grey['800']
+                                    }}
+                                />
+                            )
+                        })}
+                        {(!lookups || !(lookups?.difficultyLookup)) &&
+                            <UseDifficultyLabel difficulty={course.difficulty}/>}
+                        {lookups && lookups.difficultyLookup && lookups.difficultyLookup[course.difficulty]?.label &&
                             <Label
-                                key={"grade_" + grade}
-                                label={`${grade} класс`}
+                                label={"Уровень: " + lookups.difficultyLookup[course.difficulty].label}
                                 sx={{
                                     height: 'auto',
                                     py: {xs: 2, sm: 2.5},
-                                    backgroundColor: theme.palette.grey["100"],
-                                    color: theme.palette.grey['800']
-                                }}
-                            />
-                        )
-                    })}
-                    <DifficultyLabel course={course}/>
+                                    backgroundColor: theme.palette.primary.light + "10",
+                                    color: theme.palette.primary.light,
+                                }}/>}
+                    </Stack>}
+                {course.description && (!lookups || !(lookups?.subjectLookup)) &&
+                    <Box sx={{mb: {xs: 2, sm: 2.5, md: 3}}}>
+                        <UseDescription course={course}/>
+                    </Box>}
+                {course.description && lookups && lookups.subjectLookup &&
+                    <Box sx={{mb: {xs: 2, sm: 2.5, md: 3}}}>
+                        <Typography
+                            variant="body1"
+                            sx={{
+                                lineHeight: {xs: 1.5, sm: 1.6},
+                                color: theme.palette.grey["800"],
+                                fontSize: {xs: '0.95rem', sm: '1rem'}
+                            }}
+                        >
+                            {getEnhancedDescription(lookups.subjectLookup[course.subjects[0]], course.description)}
+                        </Typography>
+                    </Box>}
+
+                <Stack direction="row" spacing={0.75} flexWrap="wrap" useFlexGap sx={{mb: 0.5}}>
+                    {course.subjects && (!lookups || !(lookups?.subjectLookup)) && course.subjects.map(subject => // TODO: add filter for prioritizing first picked labels
+                        <Box key={subject} sx={{mb: {xs: 1.5, sm: 2}}}>
+                            <UseSubjectLabel
+                                subject={subject}/>
+                        </Box>)
+                    }
+                    {course.subjects && lookups && lookups.subjectLookup &&
+                        course.subjects.map(subject =>
+                            lookups.subjectLookup![subject]?.label && <Box key={subject} sx={{mb: {xs: 1.5, sm: 2}}}>
+                                <Label
+                                    label={capitalize(lookups.subjectLookup![subject].label)}
+                                    sx={{
+                                        mb: 0.75,
+                                        fontSize: {xs: '0.85rem', sm: '0.9rem'},
+                                        backgroundColor: lookups.subjectLookup![subject].color + "10",
+                                        color: lookups.subjectLookup![subject].color,
+                                        height: {xs: '28px', sm: '32px'},
+                                        px: {xs: 0.5, sm: 1}
+                                    }}
+                                />
+                            </Box>)
+                    }
                 </Stack>
-
-                <Box sx={{mb: {xs: 2, sm: 2.5, md: 3}}}>
-                    <Description course={course}/>
-                </Box>
-
-                <Box sx={{mb: {xs: 1.5, sm: 2}}}>
-                    <Stack direction="row" spacing={0.75} flexWrap="wrap" useFlexGap sx={{mb: 0.5}}>
-                        {
-                            course.subjects.map(subject => <SubjectLabel key={subject} subject={subject}/>) // TODO: add filter for prioritizing first picked labels
-                        }
-                    </Stack>
-                </Box>
             </CardContent>
             <Flex sx={{
                 justifyContent: 'flex-start',
@@ -129,9 +167,11 @@ const Course: FC<CourseProps> = ({course}) => {
             }}>
                 <Button
                     variant="contained"
-                    href={course.url}
-                    target="_blank"
-                    rel="noopener"
+                    {...(course.url ? {
+                        href: course.url,
+                        target: "_blank",
+                        rel: "noopener"
+                    } : {})}
                     sx={{
                         borderRadius: "5px",
                         px: {xs: 3, sm: 3.5, md: 4},
