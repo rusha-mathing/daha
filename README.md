@@ -302,3 +302,14 @@ For the current setup, the customer needs a Linux-based VPS or another type of s
 
 ## Usage
 For now, you can use only the static part on [daha.pro](https://daha.pro) and try out Telegram bot ([@dahapro_bot](https://t.me/dahapro_bot)). Admin panel part is currently not deployed due to lack of security features (e.g. absence of authentification).
+### Section for the customer:
+**Maintenance Guide (for customer)**
+This section is important because it allows the customer to maintain the site themselves after the handover, minimizing dependence on the team and ensuring long-term stability.
+- Update dependencies regularly (e.g. via npm update or similar).
+- Monitor server logs for errors.
+- Backup: Use Git for version control.
+**Ideas for future improvements (for customer)**
+This section is useful for planning, because it provides suggestions for how to develop the site if the customer decides to expand the project in the future.
+- Add user authentication.
+- Integrate analytics (e.g. Google Analytics).
+- Optimize for mobile devices if not already done.
