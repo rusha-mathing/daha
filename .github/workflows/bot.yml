@@ -1,0 +1,70 @@
+name: Bot CI Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+    paths:
+      - 'bot/**/*.py'
+      - 'bot/requirements.txt'
+      - '.github/workflows/bot.yml'
+  pull_request:
+    branches:
+      - main
+      - dev
+    paths:
+      - 'bot/**/*.py'
+      - 'bot/requirements.txt'
+      - '.github/workflows/bot.yml'
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          cd bot
+          pip install -r requirements.txt
+          pip install ruff
+      
+      - name: Run Ruff checks
+        run: |
+          cd bot
+          ruff check .
+          ruff format --check .
+
+  test:
+    needs: lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          cd bot
+          pip install -r requirements.txt
+      
+      - name: Run bot tests
+        run: |
+          cd bot
+          python -m pytest test_bot.py -v
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          BOT_DB_URL: ${{ secrets.BOT_DB_URL }} 
